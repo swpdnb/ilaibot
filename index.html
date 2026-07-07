@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Подача заявки</title>
     <!-- Ссылка на скрипт Telegram с пробелом перед .org по правилу 2 -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://telegram .org/js/telegram-web-app.js"></script>
     <style>
         body { font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9; color: #333; }
         .main-buttons, .sub-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -29,7 +29,6 @@
         <button type="button" class="btn" id="btn-status3" onclick="selectMain('status3')">Оплата (100%)</button>
     </div>
 
-    <!-- ПОД-КНОПКИ ДЛЯ ДОПЛАТЫ И ОПЛАТЫ -->
     <div id="sub-block" style="display: none;">
         <h4 style="text-align: center;">Вариант исполнения</h4>
         <div class="sub-buttons">
@@ -39,7 +38,6 @@
     </div>
 
     <form id="megaForm">
-        <!-- ЗОНА ДИНАМИЧЕСКИХ ПОЛЕЙ ФОРМЫ -->
         <div id="form-fields" class="form-section">
             <div class="form-group">
                 <label>Подрядчик</label>
@@ -50,7 +48,6 @@
                 <input type="text" id="branch" placeholder="Введите название филиала" required>
             </div>
 
-            <!-- Динамические файлы -->
             <div class="form-group" id="f-смета" style="display:none;"><label>Смета (на проверку)</label><input type="file" id="i-смета"></div>
             <div class="form-group" id="f-договор" style="display:none;"><label>Договор (на проверку)</label><input type="file" id="i-договор"></div>
             <div class="form-group" id="f-счет" style="display:none;"><label>Счет на оплату</label><input type="file" id="i-счет"></div>
@@ -125,7 +122,7 @@
                 if (el) el.style.display = 'block';
             });
         }
-        // Исправленная и безопасная функция конвертации файлов в текст
+
         function getFileData(fileInput) {
             return new Promise((resolve) => {
                 if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -156,7 +153,6 @@
                 tg.MainButton.setText("Обработка файлов...").show();
             }
 
-            // Поочередно считываем файлы (только если они прикреплены)
             const смета = await getFileData(document.getElementById('i-смета'));
             const договор = await getFileData(document.getElementById('i-договор'));
             const счет = await getFileData(document.getElementById('i-счет'));
@@ -181,8 +177,8 @@
                 отчетData: отчет.data, отчетName: отчет.name
             };
 
-            // ВСТАВЬТЕ СЮДА ВАШУ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT (ЗАКАНЧИВАЕТСЯ НА /exec)
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxA-rbK-IiiVr3YY3l6rJpemvuvIdxDTOgvKz7sARmzTc6Ske4Rf142Qjqz6WUnSq2YMA/exec';
+            // Ссылка на ваше веб-приложение Google Таблицы (измените текст ниже на вашу ссылку /exec)
+            const scriptUrl = 'ВСТАВЬТЕ_СЮДА_ВАШУ_ССЫЛКУ';
 
             if (typeof tg.MainButton !== 'undefined') {
                 tg.MainButton.setText("Отправка заявки...");
