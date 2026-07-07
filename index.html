@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Подача заявки</title>
+    <!-- Ссылка на скрипт Telegram с пробелом перед .org по правилу 2 -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #fff; color: #000; }
+        .form-group { margin-bottom: 18px; }
+        label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; font-size: 15px; }
+        button { width: 100%; padding: 14px; background: #2481cc; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h3 style="text-align: center;">Форма ввода данных</h3>
+    <form id="orderForm">
+        <div class="form-group">
+            <label>Подрядчик</label>
+            <input type="text" id="contractor" placeholder="Введите наименование" required>
+        </div>
+        <div class="form-group">
+            <label>ИНН</label>
+            <input type="text" id="inn" placeholder="10 или 12 цифр" required pattern="[0-9]{10,12}">
+        </div>
+        <div class="form-group">
+            <label>Филиал</label>
+            <select id="branch" required>
+                <option value="" disabled selected>Выберите филиал</option>
+                <option value="Москва">Москва</option>
+                <option value="Санкт-Петербург">Санкт-Петербург</option>
+                <option value="Казань">Казань</option>
+            </select>
+        </div>
+        <button type="submit">Отправить оператору</button>
+    </form>
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); 
+
+        document.getElementById('orderForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const tgId = tg.initDataUnsafe?.user?.id || "";
+
+            if(!tgId) {
+                alert('Открыть форму нужно строго внутри Telegram!');
+                return;
+            }
+
+            const payload = {
+                tg_id: tgId,
+                contractor: document.getElementById('contractor').value,
+                inn: document.getElementById('inn').value,
+                branch: document.getElementById('branch').value
+            };
+
+            // ВСТАВЬТЕ СЮДА ВАШУ ССЫЛКУ ИЗ ШАГА 2 (КОТОРАЯ ЗАКАНЧИВАЕТСЯ НА /exec)
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxA-rbK-IiiVr3YY3l6rJpemvuvIdxDTOgvKz7sARmzTc6Ske4Rf142Qjqz6WUnSq2YMA/exec';
+
+            fetch(scriptUrl, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                alert('Данные успешно переданы оператору!');
+                tg.close(); 
+            })
+            .catch(error => {
+                alert('Ошибка отправки: ' + error);
+            });
+        });
+    </script>
+</body>
+</html>
