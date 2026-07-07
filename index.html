@@ -9,7 +9,7 @@
     <style>
         body { font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9; color: #333; }
         .main-buttons, .sub-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .btn { flex: 1; min-width: 100px; padding: 12px; background: #e0e0e0; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; }
+        .btn { flex: 1; min-width: 100px; padding: 12px; background: #e0e0e0; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; color: #333; }
         .btn.active { background: #2481cc; color: #fff; }
         .form-section { display: none; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .form-section.active { display: block; }
@@ -70,8 +70,16 @@
         </div>
     </form>
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        // Безопасное объявление объекта Telegram без падения скрипта при задержках
+        let tg = null;
+        try {
+            if (window.Telegram && window.Telegram.WebApp) {
+                tg = window.Telegram.WebApp;
+                tg.expand();
+            }
+        } catch(e) {
+            console.error("Ошибка Telegram API:", e);
+        }
 
         let currentMain = '';
         let currentSub = '';
@@ -90,7 +98,10 @@
             currentSub = '';
             document.querySelectorAll('.main-buttons .btn').forEach(b => b.classList.remove('active'));
             document.querySelectorAll('.sub-buttons .btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-' + type).classList.add('active');
+            
+            const mainBtn = document.getElementById('btn-' + type);
+            if (mainBtn) mainBtn.classList.add('active');
+            
             resetFormBlocks();
 
             if (type === 'status1') {
@@ -104,8 +115,15 @@
         function selectSub(subType) {
             currentSub = subType;
             document.querySelectorAll('.sub-buttons .btn').forEach(b => b.classList.remove('active'));
-            if(subType === 'иждивение') document.getElementById('btn-sub1').classList.add('active');
-            if(subType === 'давальческое') document.getElementById('btn-sub2').classList.add('active');
+            
+            if(subType === 'иждивение') {
+                const subBtn1 = document.getElementById('btn-sub1');
+                if (subBtn1) subBtn1.classList.add('active');
+            }
+            if(subType === 'давальческое') {
+                const subBtn2 = document.getElementById('btn-sub2');
+                if (subBtn2) subBtn2.classList.add('active');
+            }
             resetFormBlocks();
 
             if (subType === 'иждивение') {
@@ -142,14 +160,14 @@
 
         document.getElementById('megaForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            const tgId = tg.initDataUnsafe?.user?.id || "";
-
-            if(!tgId) {
-                alert('Откройте приложение внутри Telegram!');
-                return;
+            
+            // Безопасное извлечение ID без риска получить TypeError
+            let tgId = "ТЕСТ_БЕЗ_ТГ";
+            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                tgId = tg.initDataUnsafe.user.id || "ТЕСТ_БЕЗ_ТГ";
             }
 
-            if (typeof tg.MainButton !== 'undefined') {
+            if (tg && tg.MainButton) {
                 tg.MainButton.setText("Обработка файлов...").show();
             }
 
@@ -180,7 +198,7 @@
             // Ссылка на ваше веб-приложение Google Таблицы (измените текст ниже на вашу ссылку /exec)
             const scriptUrl = 'https://script.google.com/macros/s/AKfycbxA-rbK-IiiVr3YY3l6rJpemvuvIdxDTOgvKz7sARmzTc6Ske4Rf142Qjqz6WUnSq2YMA/exec';
 
-            if (typeof tg.MainButton !== 'undefined') {
+            if (tg && tg.MainButton) {
                 tg.MainButton.setText("Отправка заявки...");
             }
 
@@ -191,12 +209,12 @@
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                if (typeof tg.MainButton !== 'undefined') tg.MainButton.hide();
+                if (tg && tg.MainButton) tg.MainButton.hide();
                 alert('Заявка и все документы успешно переданы!');
-                tg.close();
+                if (tg) tg.close();
             })
             .catch(err => {
-                if (typeof tg.MainButton !== 'undefined') tg.MainButton.hide();
+                if (tg && tg.MainButton) tg.MainButton.hide();
                 alert('Ошибка отправки: ' + err);
             });
         });
