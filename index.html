@@ -82,7 +82,10 @@
         function resetFormBlocks() {
             document.getElementById('form-fields').classList.remove('active');
             const fields = ['f-смета','f-договор','f-счет','f-дс','f-кс2','f-кс3','f-упд','f-отчет','f-m15'];
-            fields.forEach(id => document.getElementById(id).style.display = 'none');
+            fields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
         }
 
         function selectMain(type) {
@@ -117,17 +120,24 @@
 
         function showFields(ids) {
             document.getElementById('form-fields').classList.add('active');
-            ids.forEach(id => document.getElementById(id).style.display = 'block');
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'block';
+            });
         }
-
-        // Перевод файла в Base64 текст для отправки
+        // Исправленная и безопасная функция конвертации файлов в текст
         function getFileData(fileInput) {
             return new Promise((resolve) => {
+                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                    return resolve({ data: null, name: "" });
+                }
                 const file = fileInput.files[0];
-                if (!file) return resolve({ data: null, name: "" });
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     resolve({ data: e.target.result, name: file.name });
+                };
+                reader.onerror = function() {
+                    resolve({ data: null, name: "" });
                 };
                 reader.readAsDataURL(file);
             });
@@ -142,9 +152,11 @@
                 return;
             }
 
-            tg.MainButton.setText("Обработка файлов...").show();
+            if (typeof tg.MainButton !== 'undefined') {
+                tg.MainButton.setText("Обработка файлов...").show();
+            }
 
-            // Собираем данные по всем файлам (если они видимы и прикреплены)
+            // Поочередно считываем файлы (только если они прикреплены)
             const смета = await getFileData(document.getElementById('i-смета'));
             const договор = await getFileData(document.getElementById('i-договор'));
             const счет = await getFileData(document.getElementById('i-счет'));
@@ -158,7 +170,7 @@
                 tg_id: tgId,
                 contractor: document.getElementById('contractor').value,
                 branch: document.getElementById('branch').value,
-                m15: document.getElementById('i-m15').value,
+                m15: document.getElementById('i-m15') ? document.getElementById('i-m15').value : "",
                 сметаData: смета.data, сметаName: смета.name,
                 договорData: договор.data, договорName: договор.name,
                 счетData: счет.data, счетName: счет.name,
@@ -169,10 +181,12 @@
                 отчетData: отчет.data, отчетName: отчет.name
             };
 
-            // ВСТАВЬТЕ СЮДА ВАШУ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT (ИЗ ЧАСТИ 1 КОТОРАЯ ЗАКАНЧИВАЕТСЯ НА /exec)
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxA-rbK-IiiVr3YY3l6rJpemvuvIdxDTOgvKz7sARmzTc6Ske4Rf142Qjqz6WUnSq2YMA/exec';
+            // ВСТАВЬТЕ СЮДА ВАШУ ССЫЛКУ ИЗ GOOGLE APPS SCRIPT (ЗАКАНЧИВАЕТСЯ НА /exec)
+            const scriptUrl = 'ВСТАВЬТЕ_СЮДА_ВАШУ_ССЫЛКУ';
 
-            tg.MainButton.setText("Отправка заявки...");
+            if (typeof tg.MainButton !== 'undefined') {
+                tg.MainButton.setText("Отправка заявки...");
+            }
 
             fetch(scriptUrl, {
                 method: 'POST',
@@ -181,13 +195,13 @@
                 body: JSON.stringify(payload)
             })
             .then(() => {
-                tg.MainButton.hide();
+                if (typeof tg.MainButton !== 'undefined') tg.MainButton.hide();
                 alert('Заявка и все документы успешно переданы!');
                 tg.close();
             })
             .catch(err => {
-                tg.MainButton.hide();
-                alert('Ошибка: ' + err);
+                if (typeof tg.MainButton !== 'undefined') tg.MainButton.hide();
+                alert('Ошибка отправки: ' + err);
             });
         });
     </script>
