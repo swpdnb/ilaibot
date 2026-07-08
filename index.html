@@ -1,221 +1,128 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Подача заявки</title>
-    <!-- Ссылка на скрипт Telegram с пробелом перед .org по правилу 2 -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 15px; background-color: #f9f9f9; color: #333; }
-        .main-buttons, .sub-buttons { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
-        .btn { flex: 1; min-width: 100px; padding: 12px; background: #e0e0e0; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 13px; color: #333; }
-        .btn.active { background: #2481cc; color: #fff; }
-        .form-section { display: none; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .form-section.active { display: block; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
-        input[type="text"], select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        input[type="file"] { display: block; margin-top: 5px; }
-        .submit-btn { width: 100%; padding: 14px; background: #28a745; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Заявки</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; padding: 15px; background: #f9f9f9; color: #333; }
+
+    h3 { text-align: center; margin-bottom: 15px; font-size: 16px; }
+    h4 { text-align: center; margin-bottom: 10px; font-size: 14px; }
+
+    /* ====== ЭКРАНЫ ====== */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ====== ГЛАВНОЕ МЕНЮ ====== */
+    .menu-wrap { display: flex; flex-direction: column; gap: 12px; margin-top: 30px; }
+    .menu-btn {
+      padding: 18px; border: none; border-radius: 10px;
+      font-size: 16px; font-weight: bold; cursor: pointer; text-align: center;
+    }
+    .menu-btn.primary { background: #2481cc; color: #fff; }
+    .menu-btn.secondary { background: #e0e0e0; color: #333; }
+
+    /* ====== КНОПКИ ТИПА ОПЛАТЫ ====== */
+    .main-buttons, .sub-buttons {
+      display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;
+    }
+    .btn {
+      flex: 1; min-width: 100px; padding: 12px;
+      background: #e0e0e0; border: none; border-radius: 6px;
+      font-weight: bold; cursor: pointer; font-size: 13px; color: #333;
+    }
+    .btn.active { background: #2481cc; color: #fff; }
+
+    /* ====== ФОРМА ====== */
+    .form-section {
+      display: none; background: #fff; padding: 15px;
+      border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .form-section.active { display: block; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; }
+    input[type="text"], select {
+      width: 100%; padding: 10px;
+      border: 1px solid #ccc; border-radius: 6px; font-size: 14px;
+    }
+    input[type="file"] { display: block; margin-top: 5px; font-size: 13px; }
+
+    .submit-btn {
+      width: 100%; padding: 14px; background: #28a745;
+      color: #fff; border: none; border-radius: 6px;
+      font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px;
+    }
+    .back-btn {
+      width: 100%; padding: 10px; background: #e0e0e0;
+      color: #333; border: none; border-radius: 6px;
+      font-size: 14px; cursor: pointer; margin-bottom: 15px;
+    }
+
+    /* ====== КАРТОЧКИ ЗАЯВОК ====== */
+    .order-card {
+      background: #fff; padding: 15px; border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 12px;
+      border-left: 4px solid #2481cc;
+    }
+    .order-card .order-id { font-size: 12px; color: #999; margin-bottom: 4px; }
+    .order-card .order-contractor { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+    .order-card .order-info { font-size: 13px; color: #555; margin-bottom: 8px; }
+    .order-card .order-links { display: flex; gap: 8px; flex-wrap: wrap; }
+    .link-btn {
+      padding: 6px 12px; background: #2481cc; color: #fff;
+      border: none; border-radius: 5px; font-size: 12px;
+      cursor: pointer; text-decoration: none; display: inline-block;
+    }
+    .link-btn.fix { background: #f0ad4e; }
+    .link-btn.fix-done { background: #28a745; }
+
+    .empty-text { text-align: center; color: #999; margin-top: 40px; font-size: 14px; }
+    .loading-text { text-align: center; color: #2481cc; margin-top: 40px; font-size: 14px; }
+
+    /* ====== ФОРМА ИСПРАВЛЕННЫХ ====== */
+    .fix-order-id {
+      background: #fff3cd; border: 1px solid #ffc107;
+      padding: 10px; border-radius: 6px; margin-bottom: 15px;
+      font-size: 13px; text-align: center;
+    }
+  </style>
 </head>
 <body>
 
-    <h3 style="text-align: center;">Тип оплаты</h3>
-    <div class="main-buttons">
-        <button type="button" class="btn" id="btn-status1" onclick="selectMain('status1')">Предоплата (Аванс)</button>
-        <button type="button" class="btn" id="btn-status2" onclick="selectMain('status2')">Доплата (остаток)</button>
-        <button type="button" class="btn" id="btn-status3" onclick="selectMain('status3')">Оплата (100%)</button>
-    </div>
+<!-- ====== ЭКРАН 1: ГЛАВНОЕ МЕНЮ ====== -->
+<div id="screen-menu" class="screen active">
+  <h3>📋 Управление заявками</h3>
+  <div class="menu-wrap">
+    <button class="menu-btn primary" onclick="showScreen('screen-orders')">
+      📂 Мои заявки
+    </button>
+    <button class="menu-btn secondary" onclick="showScreen('screen-new')">
+      ➕ Новая заявка
+    </button>
+  </div>
+</div>
 
-    <div id="sub-block" style="display: none;">
-        <h4 style="text-align: center;">Вариант исполнения</h4>
-        <div class="sub-buttons">
-            <button type="button" class="btn" id="btn-sub1" onclick="selectSub('иждивение')">Иждивение</button>
-            <button type="button" class="btn" id="btn-sub2" onclick="selectSub('давальческое')">Давальческое</button>
-        </div>
-    </div>
+<!-- ====== ЭКРАН 2: МОИ ЗАЯВКИ ====== -->
+<div id="screen-orders" class="screen">
+  <button class="back-btn" onclick="showScreen('screen-menu')">← Назад</button>
+  <h3>📂 Мои заявки</h3>
+  <div id="orders-list">
+    <div class="loading-text">⏳ Загрузка заявок...</div>
+  </div>
+</div>
 
-    <form id="megaForm">
-        <div id="form-fields" class="form-section">
-            <div class="form-group">
-                <label>Подрядчик</label>
-                <input type="text" id="contractor" placeholder="Введите наименование" required>
-            </div>
-            <div class="form-group">
-                <label>Филиал</label>
-                <input type="text" id="branch" placeholder="Введите название филиала" required>
-            </div>
+<!-- ====== ЭКРАН 3: НОВАЯ ЗАЯВКА ====== -->
+<div id="screen-new" class="screen">
+  <button class="back-btn" onclick="showScreen('screen-menu')">← Назад</button>
+  <h3>Тип оплаты</h3>
+  <div class="main-buttons">
+    <button type="button" class="btn" id="btn-status1" onclick="selectMain('status1')">Предоплата (Аванс)</button>
+    <button type="button" class="btn" id="btn-status2" onclick="selectMain('status2')">Доплата (остаток)</button>
+    <button type="button" class="btn" id="btn-status3" onclick="selectMain('status3')">Оплата (100%)</button>
+  </div>
 
-            <div class="form-group" id="f-смета" style="display:none;"><label>Смета (на проверку)</label><input type="file" id="i-смета"></div>
-            <div class="form-group" id="f-договор" style="display:none;"><label>Договор (на проверку)</label><input type="file" id="i-договор"></div>
-            <div class="form-group" id="f-счет" style="display:none;"><label>Счет на оплату</label><input type="file" id="i-счет"></div>
-            <div class="form-group" id="f-дс" style="display:none;"><label>Дополнительное соглашение</label><input type="file" id="i-дс"></div>
-            <div class="form-group" id="f-кс2" style="display:none;"><label>КС-2</label><input type="file" id="i-кс2"></div>
-            <div class="form-group" id="f-кс3" style="display:none;"><label>КС-3</label><input type="file" id="i-кс3"></div>
-            <div class="form-group" id="f-упд" style="display:none;"><label>УПД / АКТ</label><input type="file" id="i-упд"></div>
-            <div class="form-group" id="f-отчет" style="display:none;"><label>Отчет о давальческом материале</label><input type="file" id="i-отчет"></div>
-            
-            <div class="form-group" id="f-m15" style="display:none;">
-                <label>М-15</label>
-                <select id="i-m15">
-                    <option value="">Не выбрано</option>
-                    <option value="Есть">Есть</option>
-                    <option value="Нет">Нет</option>
-                </select>
-            </div>
-
-            <button type="submit" class="submit-btn">Отправить заявку</button>
-        </div>
-    </form>
-    <script>
-        // Безопасное объявление объекта Telegram без падения скрипта при задержках
-        let tg = null;
-        try {
-            if (window.Telegram && window.Telegram.WebApp) {
-                tg = window.Telegram.WebApp;
-                tg.expand();
-            }
-        } catch(e) {
-            console.error("Ошибка Telegram API:", e);
-        }
-
-        let currentMain = '';
-        let currentSub = '';
-
-        function resetFormBlocks() {
-            document.getElementById('form-fields').classList.remove('active');
-            const fields = ['f-смета','f-договор','f-счет','f-дс','f-кс2','f-кс3','f-упд','f-отчет','f-m15'];
-            fields.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'none';
-            });
-        }
-
-        function selectMain(type) {
-            currentMain = type;
-            currentSub = '';
-            document.querySelectorAll('.main-buttons .btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.sub-buttons .btn').forEach(b => b.classList.remove('active'));
-            
-            const mainBtn = document.getElementById('btn-' + type);
-            if (mainBtn) mainBtn.classList.add('active');
-            
-            resetFormBlocks();
-
-            if (type === 'status1') {
-                document.getElementById('sub-block').style.display = 'none';
-                showFields(['f-смета', 'f-договор', 'f-счет']);
-            } else {
-                document.getElementById('sub-block').style.display = 'block';
-            }
-        }
-
-        function selectSub(subType) {
-            currentSub = subType;
-            document.querySelectorAll('.sub-buttons .btn').forEach(b => b.classList.remove('active'));
-            
-            if(subType === 'иждивение') {
-                const subBtn1 = document.getElementById('btn-sub1');
-                if (subBtn1) subBtn1.classList.add('active');
-            }
-            if(subType === 'давальческое') {
-                const subBtn2 = document.getElementById('btn-sub2');
-                if (subBtn2) subBtn2.classList.add('active');
-            }
-            resetFormBlocks();
-
-            if (subType === 'иждивение') {
-                showFields(['f-смета', 'f-дс', 'f-кс2', 'f-кс3', 'f-упд', 'f-счет']);
-            } else if (subType === 'давальческое') {
-                showFields(['f-смета', 'f-дс', 'f-кс2', 'f-кс3', 'f-упд', 'f-отчет', 'f-m15', 'f-счет']);
-            }
-        }
-
-        function showFields(ids) {
-            document.getElementById('form-fields').classList.add('active');
-            ids.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) el.style.display = 'block';
-            });
-        }
-
-        function getFileData(fileInput) {
-            return new Promise((resolve) => {
-                if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-                    return resolve({ data: null, name: "" });
-                }
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    resolve({ data: e.target.result, name: file.name });
-                };
-                reader.onerror = function() {
-                    resolve({ data: null, name: "" });
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        document.getElementById('megaForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            // Безопасное извлечение ID без риска получить TypeError
-            let tgId = "ТЕСТ_БЕЗ_ТГ";
-            if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-                tgId = tg.initDataUnsafe.user.id || "ТЕСТ_БЕЗ_ТГ";
-            }
-
-            if (tg && tg.MainButton) {
-                tg.MainButton.setText("Обработка файлов...").show();
-            }
-
-            const смета = await getFileData(document.getElementById('i-смета'));
-            const договор = await getFileData(document.getElementById('i-договор'));
-            const счет = await getFileData(document.getElementById('i-счет'));
-            const дс = await getFileData(document.getElementById('i-дс'));
-            const кс2 = await getFileData(document.getElementById('i-кс2'));
-            const кс3 = await getFileData(document.getElementById('i-кс3'));
-            const упд = await getFileData(document.getElementById('i-упд'));
-            const отчет = await getFileData(document.getElementById('i-отчет'));
-
-            const payload = {
-                tg_id: tgId,
-                contractor: document.getElementById('contractor').value,
-                branch: document.getElementById('branch').value,
-                m15: document.getElementById('i-m15') ? document.getElementById('i-m15').value : "",
-                сметаData: смета.data, сметаName: смета.name,
-                договорData: договор.data, договорName: договор.name,
-                счетData: счет.data, счетName: счет.name,
-                дсData: дс.data, дсName: дс.name,
-                кс2Data: кс2.data, кс2Name: кс2.name,
-                кс3Data: кс3.data, кс3Name: кс3.name,
-                упдData: упд.data, упдName: упд.name,
-                отчетData: отчет.data, отчетName: отчет.name
-            };
-
-            // Ссылка на ваше веб-приложение Google Таблицы (измените текст ниже на вашу ссылку /exec)
-            const scriptUrl = 'https://script.google.com/macros/s/AKfycbwUyn_eEblTb9wUf6rzk1hiMEACv9gXGwxZ0HpK6aIUOzJPbk2c0Qi4M19SIxpsDucISw/exec';
-
-            if (tg && tg.MainButton) {
-                tg.MainButton.setText("Отправка заявки...");
-            }
-
-            fetch(scriptUrl, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            })
-            .then(() => {
-                if (tg && tg.MainButton) tg.MainButton.hide();
-                alert('Заявка и все документы успешно переданы!');
-                if (tg) tg.close();
-            })
-            .catch(err => {
-                if (tg && tg.MainButton) tg.MainButton.hide();
-                alert('Ошибка отправки: ' + err);
-            });
-        });
-    </script>
-</body>
-</html>
+  <div id="sub-block" style="display:none;">
+    <h4>Вариант исполнения
