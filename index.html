@@ -125,4 +125,420 @@
   </div>
 
   <div id="sub-block" style="display:none;">
-    <h4>Вариант исполнения
+    <h4>Вариант исполнения</h4>
+    <div class="sub-buttons">
+      <button type="button" class="btn" id="btn-sub1" onclick="selectSub('иждивение')">Иждивение</button>
+      <button type="button" class="btn" id="btn-sub2" onclick="selectSub('давальческое')">Давальческое</button>
+    </div>
+  </div>
+
+  <form id="megaForm">
+    <div id="form-fields" class="form-section">
+      <div class="form-group">
+        <label>Подрядчик</label>
+        <input type="text" id="contractor" placeholder="Введите наименование" required>
+      </div>
+      <div class="form-group">
+        <label>Филиал</label>
+        <input type="text" id="branch" placeholder="Введите название филиала" required>
+      </div>
+
+      <div class="form-group" id="f-смета" style="display:none;">
+        <label>Смета (на проверку)</label>
+        <input type="file" id="i-смета">
+      </div>
+      <div class="form-group" id="f-договор" style="display:none;">
+        <label>Договор (на проверку)</label>
+        <input type="file" id="i-договор">
+      </div>
+      <div class="form-group" id="f-счет" style="display:none;">
+        <label>Счет на оплату</label>
+        <input type="file" id="i-счет">
+      </div>
+      <div class="form-group" id="f-дс" style="display:none;">
+        <label>Дополнительное соглашение</label>
+        <input type="file" id="i-дс">
+      </div>
+      <div class="form-group" id="f-кс2" style="display:none;">
+        <label>КС-2</label>
+        <input type="file" id="i-кс2">
+      </div>
+      <div class="form-group" id="f-кс3" style="display:none;">
+        <label>КС-3</label>
+        <input type="file" id="i-кс3">
+      </div>
+      <div class="form-group" id="f-упд" style="display:none;">
+        <label>УПД / АКТ</label>
+        <input type="file" id="i-упд">
+      </div>
+      <div class="form-group" id="f-отчет" style="display:none;">
+        <label>Отчет о давальческом материале</label>
+        <input type="file" id="i-отчет">
+      </div>
+      <div class="form-group" id="f-m15" style="display:none;">
+        <label>М-15</label>
+        <select id="i-m15">
+          <option value="">Не выбрано</option>
+          <option value="Есть">Есть</option>
+          <option value="Нет">Нет</option>
+        </select>
+      </div>
+
+      <button type="submit" class="submit-btn">Отправить заявку</button>
+    </div>
+  </form>
+</div>
+
+<!-- ====== ЭКРАН 4: ЗАГРУЗКА ИСПРАВЛЕННЫХ ====== -->
+<div id="screen-fix" class="screen">
+  <button class="back-btn" onclick="showScreen('screen-orders')">← Назад к заявкам</button>
+  <h3>📎 Исправленные документы</h3>
+
+  <div class="fix-order-id">
+    Заявка № <strong id="fix-order-id-text"></strong>
+  </div>
+
+  <form id="fixForm">
+    <div class="form-section active">
+      <div class="form-group" id="ff-смета" style="display:none;">
+        <label>Смета (на проверку)</label>
+        <input type="file" id="fi-смета">
+      </div>
+      <div class="form-group" id="ff-договор" style="display:none;">
+        <label>Договор (на проверку)</label>
+        <input type="file" id="fi-договор">
+      </div>
+      <div class="form-group" id="ff-счет" style="display:none;">
+        <label>Счет на оплату</label>
+        <input type="file" id="fi-счет">
+      </div>
+      <div class="form-group" id="ff-дс" style="display:none;">
+        <label>Дополнительное соглашение</label>
+        <input type="file" id="fi-дс">
+      </div>
+      <div class="form-group" id="ff-кс2" style="display:none;">
+        <label>КС-2</label>
+        <input type="file" id="fi-кс2">
+      </div>
+      <div class="form-group" id="ff-кс3" style="display:none;">
+        <label>КС-3</label>
+        <input type="file" id="fi-кс3">
+      </div>
+      <div class="form-group" id="ff-упд" style="display:none;">
+        <label>УПД / АКТ</label>
+        <input type="file" id="fi-упд">
+      </div>
+      <div class="form-group" id="ff-отчет" style="display:none;">
+        <label>Отчет о давальческом материале</label>
+        <input type="file" id="fi-отчет">
+      </div>
+      <div class="form-group" id="ff-m15" style="display:none;">
+        <label>М-15</label>
+        <select id="fi-m15">
+          <option value="">Не выбрано</option>
+          <option value="Есть">Есть</option>
+          <option value="Нет">Нет</option>
+        </select>
+      </div>
+
+      <button type="submit" class="submit-btn">Загрузить исправленные</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // ===== TELEGRAM =====
+  let tg = null;
+  try {
+    if (window.Telegram && window.Telegram.WebApp) {
+      tg = window.Telegram.WebApp;
+      tg.expand();
+    }
+  } catch(e) {
+    console.error('Ошибка Telegram API:', e);
+  }
+
+  let tgId = 'ТЕСТ_БЕЗ_ТГ';
+  if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
+    tgId = tg.initDataUnsafe.user.id || 'ТЕСТ_БЕЗ_ТГ';
+  }
+
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHJngbFiylanzjgNuwQ3i5TF3yypa6Ys1H5UNiszf3eP-tLRBS_2HBCDAMD4teGCIqtQ/exec';
+
+  let currentMain = '';
+  let currentSub = '';
+  let currentFixOrderId = '';
+  let currentFixPayment = '';
+
+  // ===== ПЕРЕКЛЮЧЕНИЕ ЭКРАНОВ =====
+  function showScreen(screenId) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(screenId).classList.add('active');
+
+    if (screenId === 'screen-orders') {
+      loadOrders();
+    }
+  }
+
+  // ===== НОВАЯ ЗАЯВКА — выбор типа оплаты =====
+  function selectMain(type) {
+    currentMain = type;
+    currentSub = '';
+    document.querySelectorAll('.main-buttons .btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.sub-buttons .btn').forEach(b => b.classList.remove('active'));
+
+    const mainBtn = document.getElementById('btn-' + type);
+    if (mainBtn) mainBtn.classList.add('active');
+
+    resetFormBlocks();
+
+    if (type === 'status1') {
+      document.getElementById('sub-block').style.display = 'none';
+      showFields(['f-смета', 'f-договор', 'f-счет']);
+    } else {
+      document.getElementById('sub-block').style.display = 'block';
+    }
+  }
+
+  function selectSub(subType) {
+    currentSub = subType;
+    document.querySelectorAll('.sub-buttons .btn').forEach(b => b.classList.remove('active'));
+
+    if (subType === 'иждивение') {
+      document.getElementById('btn-sub1').classList.add('active');
+      resetFormBlocks();
+      showFields(['f-смета', 'f-дс', 'f-кс2', 'f-кс3', 'f-упд', 'f-счет']);
+    } else if (subType === 'давальческое') {
+      document.getElementById('btn-sub2').classList.add('active');
+      resetFormBlocks();
+      showFields(['f-смета', 'f-дс', 'f-кс2', 'f-кс3', 'f-упд', 'f-отчет', 'f-m15', 'f-счет']);
+    }
+  }
+
+  function resetFormBlocks() {
+    document.getElementById('form-fields').classList.remove('active');
+    ['f-смета','f-договор','f-счет','f-дс','f-кс2','f-кс3','f-упд','f-отчет','f-m15'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+  }
+
+  function showFields(ids) {
+    document.getElementById('form-fields').classList.add('active');
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'block';
+    });
+  }
+
+  // ===== ЗАГРУЗКА ФАЙЛА В BASE64 =====
+  function getFileData(fileInput) {
+    return new Promise((resolve) => {
+      if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        return resolve({ data: null, name: '' });
+      }
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+      reader.onload = e => resolve({ data: e.target.result, name: file.name });
+      reader.onerror = () => resolve({ data: null, name: '' });
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // ===== ОТПРАВКА НОВОЙ ЗАЯВКИ =====
+  document.getElementById('megaForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const смета    = await getFileData(document.getElementById('i-смета'));
+    const договор  = await getFileData(document.getElementById('i-договор'));
+    const счет     = await getFileData(document.getElementById('i-счет'));
+    const дс       = await getFileData(document.getElementById('i-дс'));
+    const кс2      = await getFileData(document.getElementById('i-кс2'));
+    const кс3      = await getFileData(document.getElementById('i-кс3'));
+    const упд      = await getFileData(document.getElementById('i-упд'));
+    const отчет    = await getFileData(document.getElementById('i-отчет'));
+    const m15val   = document.getElementById('i-m15') ? document.getElementById('i-m15').value : '';
+
+    const payload = {
+      mode:        'new',
+      tg_id:       tgId,
+      paymentType: currentMain,
+      subType:     currentSub,
+      contractor:  document.getElementById('contractor').value,
+      branch:      document.getElementById('branch').value,
+      m15:         m15val,
+      сметаData:   смета.data,   сметаName:   смета.name,
+      договорData: договор.data, договорName: договор.name,
+      счетData:    счет.data,    счетName:    счет.name,
+      дсData:      дс.data,      дсName:      дс.name,
+      кс2Data:     кс2.data,     кс2Name:     кс2.name,
+      кс3Data:     кс3.data,     кс3Name:     кс3.name,
+      упдData:     упд.data,     упдName:     упд.name,
+      отчетData:   отчет.data,   отчетName:   отчет.name
+    };
+
+    const submitBtn = this.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Отправка...';
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      alert('✅ Заявка успешно отправлена!');
+      this.reset();
+      resetFormBlocks();
+      currentMain = '';
+      currentSub = '';
+      document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+      document.getElementById('sub-block').style.display = 'none';
+      showScreen('screen-menu');
+    } catch(err) {
+      alert('❌ Ошибка отправки: ' + err);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Отправить заявку';
+    }
+  });
+
+  // ===== ЗАГРУЗКА СПИСКА ЗАЯВОК =====
+  async function loadOrders() {
+    const list = document.getElementById('orders-list');
+    list.innerHTML = '<div class="loading-text">⏳ Загрузка заявок...</div>';
+
+    try {
+      const resp = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify({ mode: 'getOrders', tg_id: tgId })
+      });
+      const result = await resp.json();
+
+      if (result.status !== 'success' || !result.orders || result.orders.length === 0) {
+        list.innerHTML = '<div class="empty-text">📭 Заявок пока нет</div>';
+        return;
+      }
+
+      list.innerHTML = '';
+      result.orders.forEach(order => {
+        const card = document.createElement('div');
+        card.className = 'order-card';
+
+        const fixBtnLabel = order.fixFolderUrl
+          ? '✅ Исправленные загружены'
+          : '⚠️ Загрузить исправленные';
+        const fixBtnClass = order.fixFolderUrl ? 'link-btn fix-done' : 'link-btn fix';
+
+        card.innerHTML = `
+          <div class="order-id">ID: ${order.id}</div>
+          <div class="order-contractor">${order.contractor || '—'}</div>
+          <div class="order-info">
+            🏗 ${order.branch || '—'} &nbsp;|&nbsp;
+            💰 ${order.paymentType || '—'} &nbsp;|&nbsp;
+            📅 ${order.date || '—'}
+          </div>
+          <div class="order-links">
+            ${order.folderUrl
+              ? `<a class="link-btn" href="${order.folderUrl}" target="_blank">📁 Документы</a>`
+              : ''}
+            ${order.fixFolderUrl
+              ? `<a class="link-btn fix-done" href="${order.fixFolderUrl}" target="_blank">✅ Исправленные</a>`
+              : ''}
+            <button class="${fixBtnClass}" onclick="openFixScreen('${order.id}', '${order.paymentType}', '${order.m15 || ''}')">
+              ${order.fixFolderUrl ? '🔄 Загрузить снова' : '⚠️ Загрузить исправленные'}
+            </button>
+          </div>
+        `;
+        list.appendChild(card);
+      });
+
+    } catch(err) {
+      list.innerHTML = '<div class="empty-text">❌ Ошибка загрузки заявок</div>';
+    }
+  }
+
+  // ===== ОТКРЫТЬ ЭКРАН ИСПРАВЛЕННЫХ =====
+  function openFixScreen(orderId, paymentType, m15) {
+    currentFixOrderId = orderId;
+    currentFixPayment = paymentType;
+
+    document.getElementById('fix-order-id-text').textContent = orderId;
+
+    // Скрываем все поля формы исправленных
+    ['ff-смета','ff-договор','ff-счет','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-отчет','ff-m15'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+
+    // Показываем нужные поля в зависимости от типа оплаты и М-15
+    if (paymentType === 'Предоплата (Аванс)') {
+      ['ff-смета','ff-договор','ff-счет'].forEach(id => {
+        document.getElementById(id).style.display = 'block';
+      });
+    } else {
+      // Доплата или 100% — смотрим М-15
+      if (m15 === 'Есть') {
+        // Давальческое
+        ['ff-смета','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-отчет','ff-m15','ff-счет'].forEach(id => {
+          document.getElementById(id).style.display = 'block';
+        });
+      } else {
+        // Иждивение
+        ['ff-смета','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-счет'].forEach(id => {
+          document.getElementById(id).style.display = 'block';
+        });
+      }
+    }
+
+    showScreen('screen-fix');
+  }
+
+  // ===== ОТПРАВКА ИСПРАВЛЕННЫХ =====
+  document.getElementById('fixForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const смета    = await getFileData(document.getElementById('fi-смета'));
+    const договор  = await getFileData(document.getElementById('fi-договор'));
+    const счет     = await getFileData(document.getElementById('fi-счет'));
+    const дс       = await getFileData(document.getElementById('fi-дс'));
+    const кс2      = await getFileData(document.getElementById('fi-кс2'));
+    const кс3      = await getFileData(document.getElementById('fi-кс3'));
+    const упд      = await getFileData(document.getElementById('fi-упд'));
+    const отчет    = await getFileData(document.getElementById('fi-отчет'));
+
+    const payload = {
+      mode:        'fix',
+      tg_id:       tgId,
+      orderId:     currentFixOrderId,
+      сметаData:   смета.data,   сметаName:   смета.name,
+      договорData: договор.data, договорName: договор.name,
+      счетData:    счет.data,    счетName:    счет.name,
+      дсData:      дс.data,      дсName:      дс.name,
+      кс2Data:     кс2.data,     кс2Name:     кс2.name,
+      кс3Data:     кс3.data,     кс3Name:     кс3.name,
+      упдData:     упд.data,     упдName:     упд.name,
+      отчетData:   отчет.data,   отчетName:   отчет.name
+    };
+
+    const submitBtn = this.querySelector('.submit-btn');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Загрузка...';
+
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      alert('✅ Исправленные документы загружены!');
+      this.reset();
+      showScreen('screen-orders');
+    } catch(err) {
+      alert('❌ Ошибка загрузки: ' + err);
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Загрузить исправленные';
+    }
+  });
+</script>
+</body>
+</html>
