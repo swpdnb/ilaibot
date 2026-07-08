@@ -154,9 +154,11 @@ try {
 } catch(e) {}
 
 let tgId = 'TEST_USER';
+let tgUsername = '';
 try {
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
-    tgId = tg.initDataUnsafe.user.id.toString();
+    tgId       = tg.initDataUnsafe.user.id.toString();
+    tgUsername = tg.initDataUnsafe.user.username || '';
   }
 } catch(e) {}
 
@@ -286,6 +288,7 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     var payload = {
       mode:        'new',
       tg_id:       tgId,
+      tg_username: tgUsername,
       paymentType: currentMain,
       subType:     currentSub,
       contractor:  document.getElementById('contractor').value.trim(),
@@ -331,7 +334,7 @@ async function loadOrders() {
   list.innerHTML = '<div class="loading-msg">⏳ Загрузка заявок...</div>';
 
   try {
-    var payload = { mode: 'getOrders', tg_id: tgId };
+    var payload = { mode: 'getOrders', tg_id: tgId, tg_username: tgUsername };
     var resp    = await fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)));
     var result  = await resp.json();
 
@@ -433,6 +436,7 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
     var payload = {
       mode:        'fix',
       tg_id:       tgId,
+      tg_username: tgUsername,
       orderId:     currentFixOrderId,
       сметаData:   смета.data,   сметаName:   смета.name,
       договорData: договор.data, договорName: договор.name,
