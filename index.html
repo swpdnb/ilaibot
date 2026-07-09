@@ -627,8 +627,8 @@ function renderOrders(orders) {
 
     // ── БЛОК АВАНС ──
     var avansRows = '';
-    if (order.avansBlock && order.avansBlock.length > 0) {
-      order.avansBlock.forEach(function(item) {
+    if (order.avans && order.avans.length > 0) {
+      order.avans.forEach(function(item) {
         avansRows += makeRow(item.label, item.value);
       });
     }
