@@ -625,39 +625,37 @@ function renderOrders(orders) {
         'border-radius:4px;font-size:11px;font-weight:bold;">🔗 Доплата к №' + order.linkedOrderId + '</span>';
     }
 
-    // ── БЛОК АВАНС ──
-    var avansRows = '';
-    if (order.avans && order.avans.length > 0) {
-      order.avans.forEach(function(item) {
-        avansRows += makeRow(item.label, item.value);
-      });
-    }
+// ── БЛОК АВАНС ──
+var avansRows = '';
+if (order.avans && order.avans.length > 0) {
+  order.avans.forEach(function(item) {
+    avansRows += makeRow(item.label, item.value);
+  });
+}
+var avansBlock = '';
+if (avansRows) {
+  avansBlock =
+    '<div class="status-block">' +
+      '<div class="status-block-header avans">💰 Аванс</div>' +
+      avansRows +
+    '</div>';
+}
 
-    var avansBlock = '';
-    if (avansRows) {
-      avansBlock =
-        '<div class="status-block">' +
-          '<div class="status-block-header avans">💰 Аванс</div>' +
-          avansRows +
-        '</div>';
-    }
-
-    // ── БЛОК ЗАКРЫТИЕ ЗАТРАТ ──
-    var zakrRows = '';
-    if (order.zakrBlock && order.zakrBlock.length > 0) {
-      order.zakrBlock.forEach(function(item) {
-        zakrRows += makeRow(item.label, item.value);
-      });
-    }
-
-    var zakrBlock = '';
-    if (zakrRows) {
-      zakrBlock =
-        '<div class="status-block">' +
-          '<div class="status-block-header zakr">📋 Закрытие затрат</div>' +
-          zakrRows +
-        '</div>';
-    }
+// ── БЛОК ЗАКРЫТИЕ ЗАТРАТ ──
+var zakrRows = '';
+if (order.zakr && order.zakr.length > 0) {
+  order.zakr.forEach(function(item) {
+    zakrRows += makeRow(item.label, item.value);
+  });
+}
+var zakrBlock = '';
+if (zakrRows) {
+  zakrBlock =
+    '<div class="status-block">' +
+      '<div class="status-block-header zakr">📋 Закрытие затрат</div>' +
+      zakrRows +
+    '</div>';
+}
 
     // Шапка карточки
     var cardBody =
