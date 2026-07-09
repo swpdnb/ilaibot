@@ -390,6 +390,7 @@
     }
 
     // ── Загрузка заявок ───────────────────────────────────────────────
+    console.log('ORDERS:', JSON.stringify(result.orders[0]));
     function loadOrders() {
       var list = document.getElementById('orderList');
       list.innerHTML = '<div class="loading">⏳ Загрузка заявок...</div>';
