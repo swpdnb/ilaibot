@@ -276,7 +276,7 @@ try {
   }
 } catch(e) {}
 
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1h5b9aCHu-c9Aphnx-yYhVdGs7O8N_WjG-lf3CW1uvydZwdYheK15W8cg3VgnUv3s/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDK2BZIdrTi7mcTqEiRnKzfX5APPTul2ay8aNrJoOCWgKAFXAfVGVGXzv32etSIpj7Nw/exec';
 
 let currentMain       = '';
 let currentSub        = '';
@@ -318,10 +318,7 @@ function selectMain(type) {
   currentMain = type;
   currentSub  = '';
 
-  // Сброс подтипа
   document.querySelectorAll('#sub-block .btn').forEach(function(b) { b.classList.remove('active'); });
-
-  // Активная кнопка типа
   document.querySelectorAll('.type-buttons .btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('btn-' + type).classList.add('active');
 
@@ -332,16 +329,13 @@ function selectMain(type) {
   document.getElementById('linked-order-info').style.display = 'none';
 
   if (type === 'status1') {
-    // Предоплата — поля подрядчик/филиал видны, файлы для предоплаты
     showFields(['f-смета', 'f-договор', 'f-счет']);
     document.getElementById('form-fields').classList.add('active');
   } else if (type === 'status2') {
-    // Доплата — выбор связанной заявки + подтип
     document.getElementById('doplata-block').style.display = 'block';
     document.getElementById('sub-block').style.display     = 'block';
     loadDoplataOrders();
   } else if (type === 'status3') {
-    // 100% — только подтип
     document.getElementById('sub-block').style.display = 'block';
     document.getElementById('form-fields').classList.add('active');
   }
@@ -357,16 +351,12 @@ async function loadDoplataOrders() {
     var result  = await resp.json();
     cachedOrders = result.orders || [];
 
-    // Все заявки (не закрытые) — для выбора доплаты
-    var activeOrders = cachedOrders.filter(function(o) {
-      return (o.globalStatus || '').toLowerCase() !== 'закрыты';
+    // Фильтруем только предоплаты (не закрытые)
+    var predoplaty = cachedOrders.filter(function(o) {
+      return (o.paymentType === 'предоплата' || o.paymentType === 'status1');
     });
 
     select.innerHTML = '<option value="__none__">— Не связанная заявка —</option>';
-
-    var predoplaty = activeOrders.filter(function(o) {
-      return o.paymentType === 'предоплата' || o.paymentType === 'status1';
-    });
 
     predoplaty.forEach(function(order) {
       var opt = document.createElement('option');
@@ -387,12 +377,10 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   var details    = document.getElementById('linked-order-details');
   var link       = document.getElementById('linked-order-link');
 
-  // Если выбрали "не связанная"
   if (!selectedId || selectedId === '__none__') {
     infoBlock.style.display = 'none';
     document.getElementById('contractor').value = '';
     document.getElementById('branch').value     = '';
-    // Показываем поля подрядчик/филиал для ручного ввода
     document.getElementById('form-fields').classList.add('active');
     return;
   }
@@ -414,8 +402,6 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   }
 
   infoBlock.style.display = 'block';
-
-  // Автозаполняем подрядчика и филиал из связанной заявки
   document.getElementById('contractor').value = order.contractor || '';
   document.getElementById('branch').value     = order.branch     || '';
   document.getElementById('form-fields').classList.add('active');
@@ -468,23 +454,26 @@ function readFile(inputId) {
 function getStatusBadge(value) {
   if (!value) return '<span class="badge-plain">—</span>';
   var v = value.toString().toLowerCase().trim();
-  if (v === 'оплачено')
-    return '<span class="badge badge-green">'  + value + '</span>';
-  if (v === 'в очереди на оплату')
-    return '<span class="badge badge-blue">'   + value + '</span>';
-  if (v === 'на согласовании')
-    return '<span class="badge badge-yellow">' + value + '</span>';
-  if (v === 'ждем счет')
-    return '<span class="badge badge-gray">'   + value + '</span>';
-  if (v === 'отказ')
-    return '<span class="badge badge-red">'    + value + '</span>';
+  if (v === 'оплачено')               return '<span class="badge badge-green">'  + value + '</span>';
+  if (v === 'в очереди на оплату')    return '<span class="badge badge-blue">'   + value + '</span>';
+  if (v === 'на согласовании')        return '<span class="badge badge-yellow">' + value + '</span>';
+  if (v === 'ждем счет')              return '<span class="badge badge-gray">'   + value + '</span>';
+  if (v === 'отказ')                  return '<span class="badge badge-red">'    + value + '</span>';
   if (v === 'да' || v === 'есть' || v === 'подписан' || v === 'готово')
-    return '<span class="badge badge-green">'  + value + '</span>';
+                                      return '<span class="badge badge-green">'  + value + '</span>';
   if (v === 'нет' || v === 'отсутствует')
-    return '<span class="badge badge-red">'    + value + '</span>';
+                                      return '<span class="badge badge-red">'    + value + '</span>';
   if (v === 'в работе' || v === 'в процессе')
-    return '<span class="badge badge-blue">'   + value + '</span>';
+                                      return '<span class="badge badge-blue">'   + value + '</span>';
   return '<span class="badge-plain">' + value + '</span>';
+}
+
+// ===== СТРОКА СТАТУСА =====
+function makeRow(label, value) {
+  return '<div class="status-row">' +
+    '<span class="status-label">' + (label || '') + '</span>' +
+    '<span class="status-value">' + getStatusBadge(value) + '</span>' +
+  '</div>';
 }
 
 // ===== ОТПРАВКА НОВОЙ ЗАЯВКИ =====
@@ -496,10 +485,8 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     alert('Выберите вариант исполнения!'); return;
   }
 
-  // Для доплаты определяем связанную заявку
   var linkedOrderId   = '';
   var linkedFolderUrl = '';
-  var targetOrderId   = ''; // ID заявки куда грузим файлы
 
   if (currentMain === 'status2') {
     var selectVal = document.getElementById('doplata-order-select').value;
@@ -507,7 +494,6 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
 
     if (selectVal !== '__none__') {
       linkedOrderId = selectVal;
-      targetOrderId = selectVal; // файлы грузим в папку исходной заявки
       var linkedOrder = cachedOrders.find(function(o) { return o.id === linkedOrderId; });
       if (linkedOrder) linkedFolderUrl = linkedOrder.folderUrl || '';
     }
@@ -535,12 +521,10 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       paymentType: currentMain,
       subType: currentSub,
       contractor: document.getElementById('contractor').value.trim(),
-      branch:     document
-      .getElementById('branch').value.trim(),
+      branch:     document.getElementById('branch').value.trim(),
       m15: m15,
       linkedOrderId: linkedOrderId,
       linkedFolderUrl: linkedFolderUrl,
-      targetOrderId: targetOrderId,
       сметаData:   смета.data,   сметаName:   смета.name,
       договорData: договор.data, договорName: договор.name,
       счетData:    счет.data,    счетName:    счет.name,
@@ -594,7 +578,6 @@ async function loadOrders() {
 
   } catch(err) {
     list.innerHTML = '<div class="empty-msg">❌ Ошибка загрузки. Попробуйте позже.</div>';
-    console.error('loadOrders error:', err);
   }
 }
 
@@ -609,12 +592,6 @@ function renderOrders(orders) {
 
   list.innerHTML = '';
   orders.slice().reverse().forEach(function(order) {
-
-      // ВРЕМЕННО — для отладки
-  console.log('ID:', order.id);
-  console.log('avans:', JSON.stringify(order.avans));
-  console.log('zakr:', JSON.stringify(order.zakr));
-  
     var card = document.createElement('div');
     card.className = 'order-card';
 
@@ -631,37 +608,37 @@ function renderOrders(orders) {
         'border-radius:4px;font-size:11px;font-weight:bold;">🔗 Доплата к №' + order.linkedOrderId + '</span>';
     }
 
-// ── БЛОК АВАНС ──
-var avansRows = '';
-if (order.avans && order.avans.length > 0) {
-  order.avans.forEach(function(item) {
-    avansRows += makeRow(item.label, item.value);
-  });
-}
-var avansBlock = '';
-if (avansRows) {
-  avansBlock =
-    '<div class="status-block">' +
-      '<div class="status-block-header avans">💰 Аванс</div>' +
-      avansRows +
-    '</div>';
-}
+    // ── БЛОК АВАНС ──
+    var avansRows = '';
+    if (order.avans && order.avans.length > 0) {
+      order.avans.forEach(function(item) {
+        avansRows += makeRow(item.label, item.value);
+      });
+    }
+    var avansBlock = '';
+    if (avansRows) {
+      avansBlock =
+        '<div class="status-block">' +
+          '<div class="status-block-header avans">💰 Аванс</div>' +
+          avansRows +
+        '</div>';
+    }
 
-// ── БЛОК ЗАКРЫТИЕ ЗАТРАТ ──
-var zakrRows = '';
-if (order.zakr && order.zakr.length > 0) {
-  order.zakr.forEach(function(item) {
-    zakrRows += makeRow(item.label, item.value);
-  });
-}
-var zakrBlock = '';
-if (zakrRows) {
-  zakrBlock =
-    '<div class="status-block">' +
-      '<div class="status-block-header zakr">📋 Закрытие затрат</div>' +
-      zakrRows +
-    '</div>';
-}
+    // ── БЛОК ЗАКРЫТИЕ ЗАТРАТ ──
+    var zakrRows = '';
+    if (order.zakr && order.zakr.length > 0) {
+      order.zakr.forEach(function(item) {
+        zakrRows += makeRow(item.label, item.value);
+      });
+    }
+    var zakrBlock = '';
+    if (zakrRows) {
+      zakrBlock =
+        '<div class="status-block">' +
+          '<div class="status-block-header zakr">📋 Закрытие затрат</div>' +
+          zakrRows +
+        '</div>';
+    }
 
     // Шапка карточки
     var cardBody =
@@ -699,7 +676,7 @@ if (zakrRows) {
     list.appendChild(card);
   });
 
-  // Обработчики кнопок
+  // Обработчики кнопок исправленных
   list.querySelectorAll('button[data-id]').forEach(function(b) {
     b.addEventListener('click', function() {
       openFixScreen(
@@ -709,14 +686,6 @@ if (zakrRows) {
       );
     });
   });
-}
-
-// ===== СТРОКА СТАТУСА =====
-function makeRow(label, value) {
-  return '<div class="status-row">' +
-    '<span class="status-label">' + label + '</span>' +
-    '<span class="status-value">' + getStatusBadge(value) + '</span>' +
-  '</div>';
 }
 
 // ===== ПОИСК =====
