@@ -60,50 +60,18 @@
     .linked-order-info .linked-title { font-weight: bold; margin-bottom: 6px; color: #2481cc; }
     .linked-order-info a { display: inline-block; margin-top: 8px; padding: 6px 12px; background: #2481cc; color: #fff; border-radius: 5px; text-decoration: none; font-size: 12px; }
 
-    /* ── ПОИСК ── */
     .search-wrap { margin-bottom: 12px; }
-    .search-wrap input {
-      width: 100%;
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      outline: none;
-      background: #fff;
-    }
+    .search-wrap input { width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #ccc; font-size: 14px; outline: none; background: #fff; }
     .search-wrap input:focus { border-color: #2481cc; }
 
-    /* ── БЛОКИ СТАТУСОВ ── */
-    .info-block {
-      margin-top: 10px;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #e0e0e0;
-    }
-    .info-block-title {
-      font-size: 11px;
-      font-weight: bold;
-      padding: 5px 10px;
-      letter-spacing: 0.4px;
-      color: #fff;
-      background: #2481cc;
-    }
+    .info-block { margin-top: 10px; border-radius: 8px; overflow: hidden; border: 1px solid #e0e0e0; }
+    .info-block-title { font-size: 11px; font-weight: bold; padding: 5px 10px; letter-spacing: 0.4px; color: #fff; background: #2481cc; }
     .info-block-title.zakr { background: #28a745; }
-
-    .info-block-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 5px 10px;
-      font-size: 12px;
-      border-bottom: 1px solid #f0f0f0;
-      gap: 8px;
-    }
+    .info-block-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px; font-size: 12px; border-bottom: 1px solid #f0f0f0; gap: 8px; }
     .info-block-row:last-child { border-bottom: none; }
     .info-block-label { color: #888; flex: 1; }
     .info-block-value { text-align: right; flex: 1; }
 
-    /* ── БЕЙДЖИ ── */
     .badge { display: inline-block; padding: 2px 7px; border-radius: 4px; font-size: 11px; font-weight: bold; white-space: nowrap; }
     .badge-green  { background: #d4edda; color: #155724; }
     .badge-yellow { background: #fff3cd; color: #856404; }
@@ -128,7 +96,6 @@
 <div id="screen-orders" class="screen">
   <button class="back-btn" id="back-from-orders">← Назад</button>
   <h3>📂 Мои заявки</h3>
-  <!-- ПОИСК -->
   <div class="search-wrap">
     <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или ID...">
   </div>
@@ -240,10 +207,10 @@ try {
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1h5b9aCHu-c9Aphnx-yYhVdGs7O8N_WjG-lf3CW1uvydZwdYheK15W8cg3VgnUv3s/exec';
 
-let currentMain = '';
-let currentSub  = '';
+let currentMain       = '';
+let currentSub        = '';
 let currentFixOrderId = '';
-let cachedOrders = [];
+let cachedOrders      = [];
 
 // ===== ЭКРАНЫ =====
 function showScreen(id) {
@@ -285,9 +252,9 @@ function selectMain(type) {
 
   hideAllFields();
   document.getElementById('form-fields').classList.remove('active');
-  document.getElementById('sub-block').style.display            = 'none';
-  document.getElementById('doplata-block').style.display        = 'none';
-  document.getElementById('linked-order-info').style.display    = 'none';
+  document.getElementById('sub-block').style.display         = 'none';
+  document.getElementById('doplata-block').style.display     = 'none';
+  document.getElementById('linked-order-info').style.display = 'none';
 
   if (type === 'status1') {
     showFields(['f-смета', 'f-договор', 'f-счет']);
@@ -404,22 +371,17 @@ function readFile(inputId) {
 function getStatusBadge(value) {
   if (!value) return '<span class="badge-plain">—</span>';
   var v = value.toString().toLowerCase().trim();
-  if (v === 'оплачено')
-    return '<span class="badge badge-green">'  + value + '</span>';
-  if (v === 'в очереди на оплату')
-    return '<span class="badge badge-blue">'   + value + '</span>';
-  if (v === 'на согласовании')
-    return '<span class="badge badge-yellow">' + value + '</span>';
-  if (v === 'ждем счет')
-    return '<span class="badge badge-gray">'   + value + '</span>';
-  if (v === 'отказ')
-    return '<span class="badge badge-red">'    + value + '</span>';
+  if (v === 'оплачено')               return '<span class="badge badge-green">'  + value + '</span>';
+  if (v === 'в очереди на оплату')    return '<span class="badge badge-blue">'   + value + '</span>';
+  if (v === 'на согласовании')        return '<span class="badge badge-yellow">' + value + '</span>';
+  if (v === 'ждем счет')              return '<span class="badge badge-gray">'   + value + '</span>';
+  if (v === 'отказ')                  return '<span class="badge badge-red">'    + value + '</span>';
   if (v === 'да' || v === 'есть' || v === 'подписан' || v === 'готово')
-    return '<span class="badge badge-green">'  + value + '</span>';
+                                      return '<span class="badge badge-green">'  + value + '</span>';
   if (v === 'нет' || v === 'отсутствует')
-    return '<span class="badge badge-red">'    + value + '</span>';
+                                      return '<span class="badge badge-red">'    + value + '</span>';
   if (v === 'в работе' || v === 'в процессе')
-    return '<span class="badge badge-blue">'   + value + '</span>';
+                                      return '<span class="badge badge-blue">'   + value + '</span>';
   return '<span class="badge-plain">' + value + '</span>';
 }
 
@@ -497,11 +459,8 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
 async function loadOrders() {
   var list = document.getElementById('orders-list');
   list.innerHTML = '<div class="loading-msg">⏳ Загрузка заявок...</div>';
-
-  // Сбрасываем поиск
   document.getElementById('searchInput').value = '';
-
-  try {
+    try {
     var payload = { mode: 'getOrders', tg_id: tgId, tg_username: tgUsername };
     var resp    = await fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)));
     var result  = await resp.json();
@@ -535,7 +494,6 @@ function renderOrders(orders) {
     var card = document.createElement('div');
     card.className = 'order-card';
 
-    // Бейдж связанной заявки
     var linkedBadge = '';
     if (order.linkedOrderId) {
       linkedBadge =
@@ -543,17 +501,16 @@ function renderOrders(orders) {
         'border-radius:4px;font-size:11px;">🔗 Доплата к №' + order.linkedOrderId + '</span>';
     }
 
-    // Тип оплаты → человеческое название
     var paymentLabel = order.paymentType || '—';
     if (order.paymentType === 'status1' || order.paymentType === 'предоплата') paymentLabel = 'Предоплата (Аванс)';
     if (order.paymentType === 'status2' || order.paymentType === 'доплата')    paymentLabel = 'Доплата (остаток)';
     if (order.paymentType === 'status3' || order.paymentType === 'оплата100')  paymentLabel = 'Оплата (100%)';
 
-    // ── БЛОК СТАТУСОВ АВАНС ──
-    var avatansBlock = '';
-    var hasAvanс = order.statusAvans || order.statusDogovor || order.statusSmeta || order.statusSchet;
-    if (hasAvanс) {
-      avatansBlock =
+    // ── БЛОК АВАНС ──
+    var avansBlock = '';
+    var hasAvans = order.statusAvans || order.statusDogovor || order.statusSmeta || order.statusSchet;
+    if (hasAvans) {
+      avansBlock =
         '<div class="info-block">' +
           '<div class="info-block-title">💰 Аванс</div>' +
           (order.statusAvans
@@ -571,7 +528,7 @@ function renderOrders(orders) {
         '</div>';
     }
 
-    // ── БЛОК СТАТУСОВ ЗАКРЫТИЕ ЗАТРАТ ──
+    // ── БЛОК ЗАКРЫТИЕ ЗАТРАТ ──
     var zakrBlock = '';
     var hasZakr = order.statusZakr || order.statusKs2 || order.statusKs3 || order.statusUpd || order.statusOtchet;
     if (hasZakr) {
@@ -605,7 +562,7 @@ function renderOrders(orders) {
         (order.subType ? ' · ' + order.subType : '') +
         (order.m15 ? ' | М-15: ' + order.m15 : '') +
       '</div>' +
-      avatansBlock +
+      avansBlock +
       zakrBlock +
       '<div class="order-btns" style="margin-top:10px;">' +
         (order.folderUrl
@@ -628,7 +585,6 @@ function renderOrders(orders) {
     list.appendChild(card);
   });
 
-  // Обработчики кнопок исправленных
   list.querySelectorAll('button[data-id]').forEach(function(b) {
     b.addEventListener('click', function() {
       openFixScreen(
@@ -643,10 +599,7 @@ function renderOrders(orders) {
 // ===== ПОИСК =====
 document.getElementById('searchInput').addEventListener('input', function() {
   var q = this.value.trim().toLowerCase();
-  if (!q) {
-    renderOrders(cachedOrders);
-    return;
-  }
+  if (!q) { renderOrders(cachedOrders); return; }
   var filtered = cachedOrders.filter(function(o) {
     return (
       (o.id         && o.id.toString().toLowerCase().includes(q)) ||
