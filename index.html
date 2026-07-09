@@ -561,23 +561,25 @@ async function loadOrders() {
   var list = document.getElementById('orders-list');
   list.innerHTML = '<div class="loading-msg">⏳ Загрузка заявок...</div>';
   document.getElementById('searchInput').value = '';
-
+  var url = SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify({ mode: 'getOrders', tg_id: tgId, tg_username: tgUsername }));
   try {
-    var payload = { mode: 'getOrders', tg_id: tgId, tg_username: tgUsername };
-    var resp    = await fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)));
-    var result  = await resp.json();
-
-    cachedOrders = result.orders || [];
-
-    if (!cachedOrders || cachedOrders.length === 0) {
-      list.innerHTML = '<div class="empty-msg">📭 Заявок пока нет</div>';
+    var resp = await fetch(url);
+    var text = await resp.text();
+    var result;
+    try {
+      result = JSON.parse(text);
+    } catch(parseErr) {
+      list.innerHTML = '<div class="empty-msg">❌ Ответ сервера:<br><small style="word-break:break-all;">' + text.substring(0, 300) + '</small></div>';
       return;
     }
-
+    cachedOrders = result.orders || [];
+    if (!cachedOrders || cachedOrders.length === 0) {
+      list.innerHTML = '<div class="empty-msg">📭 Заявок пока нет<br><small>curator: ' + (result.curator || 'пусто') + '</small></div>';
+      return;
+    }
     renderOrders(cachedOrders);
-
   } catch(err) {
-    list.innerHTML = '<div class="empty-msg">❌ Ошибка загрузки. Попробуйте позже.</div>';
+    list.innerHTML = '<div class="empty-msg">❌ Ошибка: ' + err.message + '<br><small>URL: ' + url.substring(0, 100) + '...</small></div>';
   }
 }
 
