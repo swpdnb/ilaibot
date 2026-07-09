@@ -44,50 +44,21 @@
     .link-btn { padding: 6px 12px; color: #fff; border: none; border-radius: 5px; font-size: 12px; cursor: pointer; text-decoration: none; display: inline-block; background: #2481cc; }
     .link-btn.orange { background: #f0ad4e; }
     .link-btn.green  { background: #28a745; }
+    .link-btn.gray   { background: #6c757d; }
 
     .empty-msg   { text-align: center; color: #999; margin-top: 40px; font-size: 14px; }
     .loading-msg { text-align: center; color: #2481cc; margin-top: 40px; font-size: 14px; }
 
     .fix-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 10px; border-radius: 6px; margin-bottom: 14px; font-size: 13px; text-align: center; }
 
-    #sub-block        { display: none; margin-bottom: 12px; }
-    #doplata-block    { display: none; margin-bottom: 12px; }
+    #sub-block     { display: none; margin-bottom: 12px; }
+    #doplata-block { display: none; margin-bottom: 12px; }
 
-    /* Блок выбора заявки для доплаты */
-    .doplata-order-select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
+    .doplata-order-select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
 
-    /* Карточка связанной заявки */
-    .linked-order-info {
-      display: none;
-      background: #e8f4fd;
-      border: 1px solid #2481cc;
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-      font-size: 13px;
-    }
-    .linked-order-info .linked-title {
-      font-weight: bold;
-      margin-bottom: 6px;
-      color: #2481cc;
-    }
-    .linked-order-info a {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 6px 12px;
-      background: #2481cc;
-      color: #fff;
-      border-radius: 5px;
-      text-decoration: none;
-      font-size: 12px;
-    }
+    .linked-order-info { display: none; background: #e8f4fd; border: 1px solid #2481cc; border-radius: 8px; padding: 12px; margin-bottom: 12px; font-size: 13px; }
+    .linked-order-info .linked-title { font-weight: bold; margin-bottom: 6px; color: #2481cc; }
+    .linked-order-info a { display: inline-block; margin-top: 8px; padding: 6px 12px; background: #2481cc; color: #fff; border-radius: 5px; text-decoration: none; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -126,7 +97,6 @@
     <select class="doplata-order-select" id="doplata-order-select">
       <option value="">⏳ Загрузка заявок...</option>
     </select>
-    <!-- Карточка выбранной заявки -->
     <div class="linked-order-info" id="linked-order-info">
       <div class="linked-title">📋 Информация о заявке</div>
       <div id="linked-order-details"></div>
@@ -218,7 +188,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx1h5b9aCHu-c9Aphnx-
 let currentMain = '';
 let currentSub  = '';
 let currentFixOrderId = '';
-let cachedOrders = []; // кэш заявок для выбора в доплате
+let cachedOrders = [];
 
 // ===== ЭКРАНЫ =====
 function showScreen(id) {
@@ -260,23 +230,20 @@ function selectMain(type) {
 
   hideAllFields();
   document.getElementById('form-fields').classList.remove('active');
-  document.getElementById('sub-block').style.display    = 'none';
-  document.getElementById('doplata-block').style.display = 'none';
-  document.getElementById('linked-order-info').style.display = 'none';
+  document.getElementById('sub-block').style.display            = 'none';
+  document.getElementById('doplata-block').style.display        = 'none';
+  document.getElementById('linked-order-info').style.display    = 'none';
 
   if (type === 'status1') {
-    // Предоплата — сразу показываем поля
     showFields(['f-смета', 'f-договор', 'f-счет']);
     document.getElementById('form-fields').classList.add('active');
 
   } else if (type === 'status2') {
-    // Доплата — показываем выбор связанной заявки
     document.getElementById('doplata-block').style.display = 'block';
-    document.getElementById('sub-block').style.display = 'block';
+    document.getElementById('sub-block').style.display     = 'block';
     loadDoplataOrders();
 
   } else if (type === 'status3') {
-    // Оплата 100%
     document.getElementById('sub-block').style.display = 'block';
   }
 }
@@ -293,7 +260,6 @@ async function loadDoplataOrders() {
 
     cachedOrders = result.orders || [];
 
-    // Фильтруем только предоплаты
     var predoplaty = cachedOrders.filter(function(o) {
       return o.paymentType === 'предоплата';
     });
@@ -307,7 +273,11 @@ async function loadDoplataOrders() {
     predoplaty.forEach(function(order) {
       var opt = document.createElement('option');
       opt.value = order.id;
-      opt.textContent = '№' + order.id + ' | ' + (order.contractor || '—') + ' | ' + (order.branch || '—') + ' | ' + (order.date || '');
+      opt.textContent =
+        '№' + order.id +
+        ' | ' + (order.contractor || '—') +
+        ' | ' + (order.branch     || '—') +
+        ' | ' + (order.date       || '');
       select.appendChild(opt);
     });
 
@@ -316,7 +286,7 @@ async function loadDoplataOrders() {
   }
 }
 
-// ===== ОБРАБОТЧИК ВЫБОРА СВЯЗАННОЙ ЗАЯВКИ =====
+// ===== ВЫБОР СВЯЗАННОЙ ЗАЯВКИ =====
 document.getElementById('doplata-order-select').addEventListener('change', function() {
   var selectedId = this.value;
   var infoBlock  = document.getElementById('linked-order-info');
@@ -325,21 +295,20 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
 
   if (!selectedId) {
     infoBlock.style.display = 'none';
-    // Очищаем поля подрядчик/филиал если они были автозаполнены
+    document.getElementById('contractor').value = '';
+    document.getElementById('branch').value     = '';
     return;
   }
 
   var order = cachedOrders.find(function(o) { return o.id === selectedId; });
   if (!order) { infoBlock.style.display = 'none'; return; }
 
-  // Показываем карточку
   details.innerHTML =
     '<b>ID:</b> ' + order.id + '<br>' +
     '<b>Подрядчик:</b> ' + (order.contractor || '—') + '<br>' +
-    '<b>Филиал:</b> ' + (order.branch || '—') + '<br>' +
-    '<b>Дата предоплаты:</b> ' + (order.date || '—');
+    '<b>Филиал:</b> '    + (order.branch     || '—') + '<br>' +
+    '<b>Дата:</b> '      + (order.date        || '—');
 
-  // Ставим ссылку на папку
   if (order.folderUrl) {
     link.href = order.folderUrl;
     link.style.display = 'inline-block';
@@ -351,7 +320,7 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
 
   // Автозаполняем подрядчика и филиал
   document.getElementById('contractor').value = order.contractor || '';
-  document.getElementById('branch').value     = order.branch || '';
+  document.getElementById('branch').value     = order.branch     || '';
 });
 
 // ===== ПОДТИП =====
@@ -378,6 +347,7 @@ function hideAllFields() {
     if (el) el.style.display = 'none';
   });
 }
+
 function showFields(ids) {
   ids.forEach(function(id) {
     var el = document.getElementById(id);
@@ -406,14 +376,13 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     alert('Выберите вариант исполнения!'); return;
   }
 
-  // Для доплаты — проверяем что выбрана связанная заявка
-  var linkedOrderId = '';
+  // Для доплаты проверяем выбор связанной заявки
+  var linkedOrderId   = '';
   var linkedFolderUrl = '';
   if (currentMain === 'status2') {
-    var sel = document.getElementById('doplata-order-select');
-    linkedOrderId = sel.value;
+    linkedOrderId = document.getElementById('doplata-order-select').value;
     if (!linkedOrderId) {
-      alert('Выберите заявку предоплаты для доплаты!');
+      alert('Выберите заявку предоплаты!');
       return;
     }
     var linkedOrder = cachedOrders.find(function(o) { return o.id === linkedOrderId; });
@@ -421,7 +390,7 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
   }
 
   var btn = document.getElementById('submit-new');
-  btn.disabled = true;
+  btn.disabled    = true;
   btn.textContent = '⏳ Отправка...';
 
   try {
@@ -436,16 +405,16 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     var m15     = document.getElementById('i-m15') ? document.getElementById('i-m15').value : '';
 
     var payload = {
-      mode:           'new',
-      tg_id:          tgId,
-      tg_username:    tgUsername,
-      paymentType:    currentMain,
-      subType:        currentSub,
-      contractor:     document.getElementById('contractor').value.trim(),
-      branch:         document.getElementById('branch').value.trim(),
-      m15:            m15,
-      linkedOrderId:  linkedOrderId,    // ID связанной заявки предоплаты
-      linkedFolderUrl: linkedFolderUrl, // ссылка на папку предоплаты
+      mode:            'new',
+      tg_id:           tgId,
+      tg_username:     tgUsername,
+      paymentType:     currentMain,
+      subType:         currentSub,
+      contractor:      document.getElementById('contractor').value.trim(),
+      branch:          document.getElementById('branch').value.trim(),
+      m15:             m15,
+      linkedOrderId:   linkedOrderId,
+      linkedFolderUrl: linkedFolderUrl,
       сметаData:   смета.data,   сметаName:   смета.name,
       договорData: договор.data, договорName: договор.name,
       счетData:    счет.data,    счетName:    счет.name,
@@ -466,9 +435,9 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     this.reset();
     hideAllFields();
     document.getElementById('form-fields').classList.remove('active');
-    document.getElementById('sub-block').style.display     = 'none';
-    document.getElementById('doplata-block').style.display  = 'none';
-    document.getElementById('linked-order-info').style.display = 'none';
+    document.getElementById('sub-block').style.display          = 'none';
+    document.getElementById('doplata-block').style.display      = 'none';
+    document.getElementById('linked-order-info').style.display  = 'none';
     document.querySelectorAll('.btn').forEach(function(b) { b.classList.remove('active'); });
     currentMain = '';
     currentSub  = '';
@@ -477,7 +446,7 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
   } catch(err) {
     alert('❌ Ошибка отправки: ' + err.message);
   } finally {
-    btn.disabled = false;
+    btn.disabled    = false;
     btn.textContent = '📤 Отправить заявку';
   }
 });
@@ -504,10 +473,12 @@ async function loadOrders() {
       var card = document.createElement('div');
       card.className = 'order-card';
 
-      // Бейдж для доплаты — показываем ID связанной заявки если есть
+      // Бейдж связанной заявки
       var linkedBadge = '';
       if (order.linkedOrderId) {
-        linkedBadge = '<span style="background:#fff3cd;color:#856404;padding:2px 7px;border-radius:4px;font-size:11px;margin-left:6px;">🔗 Доплата к №' + order.linkedOrderId + '</span>';
+        linkedBadge =
+          ' <span style="background:#fff3cd;color:#856404;padding:2px 7px;' +
+          'border-radius:4px;font-size:11px;">🔗 Доплата к №' + order.linkedOrderId + '</span>';
       }
 
       card.innerHTML =
@@ -522,15 +493,118 @@ async function loadOrders() {
           (order.folderUrl
             ? '<a class="link-btn" href="' + order.folderUrl + '" target="_blank">📁 Документы</a>'
             : '') +
-          // Если это доплата — показываем кнопку перехода к папке предоплаты
           (order.linkedFolderUrl
-            ? '<a class="link-btn" style="background:#6c757d;" href="' + order.linkedFolderUrl + '" target="_blank">📂 Предоплата</a>'
+            ? '<a class="link-btn gray" href="' + order.linkedFolderUrl + '" target="_blank">📂 Предоплата</a>'
             : '') +
           (order.fixFolderUrl
             ? '<a class="link-btn green" href="' + order.fixFolderUrl + '" target="_blank">✅ Исправленные</a>'
             : '') +
-          '<button class="link-btn orange" ' +
-            'data-id="' + order.id + '" ' +
-            'data-payment="' + (order.paymentType || '') + '" ' +
-            'data-m15="' + (order.m15 || '') + '">' +
-            (order.fix
+          '<button class="link-btn orange"' +
+            ' data-id="'      + order.id                    + '"' +
+            ' data-payment="' + (order.paymentType || '')   + '"' +
+            ' data-m15="'     + (order.m15 || '')           + '">' +
+            (order.fixFolderUrl ? '🔄 Загрузить снова' : '⚠️ Исправленные') +
+          '</button>' +
+        '</div>';
+
+      list.appendChild(card);
+    });
+
+    // Навешиваем обработчики на кнопки исправленных
+    list.querySelectorAll('button[data-id]').forEach(function(b) {
+      b.addEventListener('click', function() {
+        openFixScreen(
+          this.getAttribute('data-id'),
+          this.getAttribute('data-payment'),
+          this.getAttribute('data-m15')
+        );
+      });
+    });
+
+  } catch(err) {
+    list.innerHTML = '<div class="empty-msg">❌ Ошибка загрузки. Попробуйте позже.</div>';
+    console.error('loadOrders error:', err);
+  }
+}
+
+// ===== ЭКРАН ИСПРАВЛЕННЫХ =====
+function openFixScreen(orderId, paymentType, m15) {
+  currentFixOrderId = orderId;
+  document.getElementById('fix-order-id-text').textContent = orderId;
+
+  ['ff-смета','ff-договор','ff-счет','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-отчет'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = 'none';
+  });
+
+  if (paymentType === 'предоплата') {
+    ['ff-смета','ff-договор','ff-счет'].forEach(function(id) {
+      document.getElementById(id).style.display = 'block';
+    });
+  } else if (m15 === 'Есть') {
+    ['ff-смета','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-отчет','ff-счет'].forEach(function(id) {
+      document.getElementById(id).style.display = 'block';
+    });
+  } else {
+    ['ff-смета','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-счет'].forEach(function(id) {
+      document.getElementById(id).style.display = 'block';
+    });
+  }
+
+  showScreen('screen-fix');
+}
+
+// ===== ОТПРАВКА ИСПРАВЛЕННЫХ =====
+document.getElementById('fixForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  var btn = this.querySelector('.submit-btn');
+  btn.disabled    = true;
+  btn.textContent = '⏳ Загрузка...';
+
+  try {
+    var смета   = await readFile('fi-смета');
+    var договор = await readFile('fi-договор');
+    var счет    = await readFile('fi-счет');
+    var дс      = await readFile('fi-дс');
+    var кс2     = await readFile('fi-кс2');
+    var кс3     = await readFile('fi-кс3');
+    var упд     = await readFile('fi-упд');
+    var отчет   = await readFile('fi-отчет');
+
+    var payload = {
+      mode:        'fix',
+      tg_id:       tgId,
+      tg_username: tgUsername,
+      orderId:     currentFixOrderId,
+      сметаData:   смета.data,   сметаName:   смета.name,
+      договорData: договор.data, договорName: договор.name,
+      счетData:    счет.data,    счетName:    счет.name,
+      дсData:      дс.data,      дсName:      дс.name,
+      кс2Data:     кс2.data,     кс2Name:     кс2.name,
+      кс3Data:     кс3.data,     кс3Name:     кс3.name,
+      упдData:     упд.data,     упдName:     упд.name,
+      отчетData:   отчет.data,   отчетName:   отчет.name
+    };
+
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode:   'no-cors',
+      body:   JSON.stringify(payload)
+    });
+
+    alert('✅ Исправленные документы загружены!\n\nПроверьте Telegram.');
+    this.reset();
+    showScreen('screen-orders');
+    loadOrders();
+
+  } catch(err) {
+    alert('❌ Ошибка: ' + err.message);
+  } finally {
+    btn.disabled    = false;
+    btn.textContent = '📤 Загрузить исправленные';
+  }
+});
+</script>
+</body>
+</html>
