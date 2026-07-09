@@ -33,10 +33,7 @@
       margin: 0 auto;
     }
 
-    /* Поиск */
-    .search-wrap {
-      margin-bottom: 12px;
-    }
+    .search-wrap { margin-bottom: 12px; }
     .search-wrap input {
       width: 100%;
       padding: 10px 14px;
@@ -46,11 +43,8 @@
       outline: none;
       background: #fff;
     }
-    .search-wrap input:focus {
-      border-color: #2481cc;
-    }
+    .search-wrap input:focus { border-color: #2481cc; }
 
-    /* Карточка */
     .order-card {
       background: #fff;
       border-radius: 12px;
@@ -59,27 +53,10 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.08);
     }
 
-    .order-id {
-      font-size: 11px;
-      color: #888;
-      margin-bottom: 4px;
-    }
+    .order-id   { font-size: 11px; color: #888; margin-bottom: 4px; }
+    .order-name { font-size: 15px; font-weight: bold; color: #1a1a1a; margin-bottom: 6px; }
+    .order-info { font-size: 13px; color: #555; line-height: 1.6; margin-bottom: 4px; }
 
-    .order-name {
-      font-size: 15px;
-      font-weight: bold;
-      color: #1a1a1a;
-      margin-bottom: 6px;
-    }
-
-    .order-info {
-      font-size: 13px;
-      color: #555;
-      line-height: 1.6;
-      margin-bottom: 4px;
-    }
-
-    /* Блоки АВАНС / ЗАКРЫТИЕ ЗАТРАТ */
     .info-block {
       margin-top: 10px;
       border-radius: 8px;
@@ -95,10 +72,7 @@
       color: #fff;
       background: #2481cc;
     }
-
-    .info-block-title.zakr {
-      background: #28a745;
-    }
+    .info-block-title.zakr { background: #28a745; }
 
     .info-block-row {
       display: flex;
@@ -109,24 +83,11 @@
       border-bottom: 1px solid #f0f0f0;
       gap: 8px;
     }
+    .info-block-row:last-child { border-bottom: none; }
 
-    .info-block-row:last-child {
-      border-bottom: none;
-    }
+    .info-block-label { color: #888; flex: 1; min-width: 0; }
+    .info-block-value { text-align: right; flex: 1; min-width: 0; }
 
-    .info-block-label {
-      color: #888;
-      flex: 1;
-      min-width: 0;
-    }
-
-    .info-block-value {
-      text-align: right;
-      flex: 1;
-      min-width: 0;
-    }
-
-    /* Бейджи статусов */
     .badge {
       display: inline-block;
       padding: 2px 8px;
@@ -142,13 +103,7 @@
     .badge-gray   { background: #e2e3e5; color: #383d41; }
     .badge-plain  { color: #333; font-weight: bold; font-size: 12px; }
 
-    /* Кнопки */
-    .order-btns {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
+    .order-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
 
     .link-btn {
       display: inline-block;
@@ -162,25 +117,12 @@
       background: #2481cc;
       color: #fff;
     }
-    .link-btn.green  { background: #28a745; color: #fff; }
-    .link-btn.orange { background: #fd7e14; color: #fff; }
+    .link-btn.green  { background: #28a745; }
+    .link-btn.orange { background: #fd7e14; }
 
-    /* Загрузка / пусто */
-    .loading {
-      text-align: center;
-      padding: 40px 20px;
-      color: #888;
-      font-size: 14px;
-    }
+    .loading { text-align: center; padding: 40px 20px; color: #888; font-size: 14px; }
+    .empty   { text-align: center; padding: 40px 20px; color: #aaa; font-size: 14px; }
 
-    .empty {
-      text-align: center;
-      padding: 40px 20px;
-      color: #aaa;
-      font-size: 14px;
-    }
-
-    /* Модалка загрузки файлов */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -190,9 +132,8 @@
       align-items: flex-end;
       justify-content: center;
     }
-    .modal-overlay.active {
-      display: flex;
-    }
+    .modal-overlay.active { display: flex; }
+
     .modal {
       background: #fff;
       width: 100%;
@@ -202,6 +143,7 @@
       max-height: 90vh;
       overflow-y: auto;
     }
+
     .modal-title {
       font-size: 16px;
       font-weight: bold;
@@ -218,7 +160,6 @@
       line-height: 1;
     }
 
-    /* Зона загрузки */
     .upload-zone {
       border: 2px dashed #2481cc;
       border-radius: 10px;
@@ -233,9 +174,7 @@
     .upload-zone:hover { background: #f0f7ff; }
     .upload-zone input { display: none; }
 
-    .file-list {
-      margin-bottom: 14px;
-    }
+    .file-list { margin-bottom: 14px; }
     .file-item {
       display: flex;
       align-items: center;
@@ -262,10 +201,7 @@
       padding: 0 4px;
     }
 
-    .progress-wrap {
-      display: none;
-      margin-bottom: 14px;
-    }
+    .progress-wrap { display: none; margin-bottom: 14px; }
     .progress-bar-bg {
       background: #e9ecef;
       border-radius: 6px;
@@ -280,11 +216,7 @@
       width: 0%;
       transition: width 0.3s;
     }
-    .progress-text {
-      font-size: 12px;
-      color: #555;
-      text-align: center;
-    }
+    .progress-text { font-size: 12px; color: #555; text-align: center; }
 
     .btn-upload {
       width: 100%;
@@ -297,10 +229,7 @@
       font-weight: bold;
       cursor: pointer;
     }
-    .btn-upload:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
+    .btn-upload:disabled { background: #aaa; cursor: not-allowed; }
 
     .msg-success {
       display: none;
@@ -321,357 +250,346 @@
 </head>
 <body>
 
-  <div class="header">📋 Мои заявки</div>
+<div class="header">📋 Мои заявки</div>
 
-  <div class="container">
-    <div class="search-wrap">
-      <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или ID...">
-    </div>
-    <div id="orderList"><div class="loading">⏳ Загрузка заявок...</div></div>
+<div class="container">
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="🔍 Поиск по названию или ID...">
   </div>
-
-  <!-- Модалка загрузки -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal">
-      <div class="modal-title">
-        ⚠️ Загрузка исправленных
-        <button class="modal-close" id="modalClose">✕</button>
-      </div>
-      <div id="modalBody">
-        <div class="upload-zone" id="uploadZone">
-          <input type="file" id="fileInput" multiple
-            accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
-          📎 Нажмите или перетащите файлы
-        </div>
-        <div class="file-list" id="fileList"></div>
-        <div class="progress-wrap" id="progressWrap">
-          <div class="progress-bar-bg">
-            <div class="progress-bar" id="progressBar"></div>
-          </div>
-          <div class="progress-text" id="progressText">0%</div>
-        </div>
-        <div class="msg-error" id="msgError"></div>
-        <button class="btn-upload" id="btnUpload" disabled>📤 Загрузить файлы</button>
-      </div>
-      <div class="msg-success" id="msgSuccess">✅ Файлы успешно загружены!</div>
-    </div>
+  <div id="orderList">
+    <div class="loading">⏳ Загрузка заявок...</div>
   </div>
+</div>
 
-  <script>
-    var tg        = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-    var tgUser    = tg ? tg.initDataUnsafe.user : null;
-    var TG_ID     = tgUser ? tgUser.id       : '';
-    var TG_USER   = tgUser ? tgUser.username : '';
-    var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbws7QH_u5TrRYqUJqE42oSROobsZk74meldY9vCpjJTTfvhBJcVqPtfDar5xV8NXZ6oUQ/exec';  // ← вставь свой URL скрипта
+<!-- Модалка -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-title">
+      ⚠️ Загрузка исправленных
+      <button class="modal-close" id="modalClose">✕</button>
+    </div>
+    <div id="modalBody">
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="fileInput" multiple
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+        📎 Нажмите или перетащите файлы
+      </div>
+      <div class="file-list" id="fileList"></div>
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+      </div>
+      <div class="msg-error" id="msgError"></div>
+      <button class="btn-upload" id="btnUpload" disabled>📤 Загрузить файлы</button>
+    </div>
+    <div class="msg-success" id="msgSuccess">✅ Файлы успешно загружены!</div>
+  </div>
+</div>
 
-    if (tg) tg.expand();
+<script>
+  var tg      = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+  var tgUser  = tg ? tg.initDataUnsafe.user : null;
+  var TG_ID   = tgUser ? tgUser.id       : '';
+  var TG_USER = tgUser ? tgUser.username : '';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbws7QH_u5TrRYqUJqE42oSROobsZk74meldY9vCpjJTTfvhBJcVqPtfDar5xV8NXZ6oUQ/exec';
 
-    // ── Бейджи статусов ──────────────────────────────────────────────
-    function getStatusBadge(value) {
-      if (!value) return '';
-      var v = value.toString().toLowerCase().trim();
-      if (v === 'оплачено')
-        return '<span class="badge badge-green">'  + value + '</span>';
-      if (v === 'в очереди на оплату')
-        return '<span class="badge badge-blue">'   + value + '</span>';
-      if (v === 'на согласовании')
-        return '<span class="badge badge-yellow">' + value + '</span>';
-      if (v === 'ждем счет')
-        return '<span class="badge badge-gray">'   + value + '</span>';
-      if (v === 'отказ')
-        return '<span class="badge badge-red">'    + value + '</span>';
-      if (v === 'да' || v === 'есть' || v === 'подписан' || v === 'готово')
-        return '<span class="badge badge-green">'  + value + '</span>';
-      if (v === 'нет' || v === 'отсутствует')
-        return '<span class="badge badge-red">'    + value + '</span>';
-      if (v === 'в работе' || v === 'в процессе')
-        return '<span class="badge badge-blue">'   + value + '</span>';
-      return '<span class="badge-plain">' + value + '</span>';
-    }
+  if (tg) tg.expand();
 
-    // ── Загрузка заявок ───────────────────────────────────────────────
-    console.log('ORDERS:', JSON.stringify(result.orders[0]));
-    function loadOrders() {
-      var list = document.getElementById('orderList');
-      list.innerHTML = '<div class="loading">⏳ Загрузка заявок...</div>';
+  // ── Бейджи ───────────────────────────────────────────────────────
+  function getStatusBadge(value) {
+    if (!value) return '';
+    var v = value.toString().toLowerCase().trim();
+    if (v === 'оплачено')              return '<span class="badge badge-green">'  + value + '</span>';
+    if (v === 'в очереди на оплату')   return '<span class="badge badge-blue">'   + value + '</span>';
+    if (v === 'на согласовании')       return '<span class="badge badge-yellow">' + value + '</span>';
+    if (v === 'ждем счет')             return '<span class="badge badge-gray">'   + value + '</span>';
+    if (v === 'отказ')                 return '<span class="badge badge-red">'    + value + '</span>';
+    if (v === 'да' || v === 'есть' || v === 'подписан' || v === 'готово')
+                                       return '<span class="badge badge-green">'  + value + '</span>';
+    if (v === 'нет' || v === 'отсутствует')
+                                       return '<span class="badge badge-red">'    + value + '</span>';
+    if (v === 'в работе' || v === 'в процессе')
+                                       return '<span class="badge badge-blue">'   + value + '</span>';
+    return '<span class="badge-plain">' + value + '</span>';
+  }
 
-      fetch(SCRIPT_URL + '?action=getOrders&tg_id=' + TG_ID + '&tg_username=' + TG_USER)
-        .then(function(r) { return r.json(); })
-        .then(function(result) {
-          list.innerHTML = '';
+  // ── Загрузка заявок ──────────────────────────────────────────────
+  function loadOrders() {
+    var list = document.getElementById('orderList');
+    list.innerHTML = '<div class="loading">⏳ Загрузка заявок...</div>';
 
-          if (result.status !== 'ok' || !result.orders || result.orders.length === 0) {
-            list.innerHTML = '<div class="empty">📭 Заявок не найдено</div>';
-            return;
-          }
+    // Передаём параметры через data= как ожидает doGet
+    var params = encodeURIComponent(JSON.stringify({
+      mode: 'getOrders',
+      tg_id: TG_ID,
+      tg_username: TG_USER
+    }));
 
-          // Сохраняем для поиска
-          window._allOrders = result.orders;
-          renderOrders(result.orders);
+    fetch(SCRIPT_URL + '?data=' + params)
+      .then(function(r) { return r.json(); })
+      .then(function(result) {
+        // Отладка — убери после проверки
+        console.log('RESULT:', JSON.stringify(result));
 
-          // Поиск
-          document.getElementById('searchInput').addEventListener('input', function() {
-            var q = this.value.toLowerCase().trim();
-            if (!q) { renderOrders(window._allOrders); return; }
-            var filtered = window._allOrders.filter(function(o) {
-              return (o.id         && o.id.toLowerCase().includes(q)) ||
-                     (o.contractor && o.contractor.toLowerCase().includes(q)) ||
-                     (o.branch     && o.branch.toLowerCase().includes(q));
-            });
-            renderOrders(filtered);
-          });
-        })
-        .catch(function(e) {
-          list.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
-        });
-    }
+        list.innerHTML = '';
 
-    // ── Рендер списка заявок ──────────────────────────────────────────
-    function renderOrders(orders) {
-      var list = document.getElementById('orderList');
-      list.innerHTML = '';
-
-      if (!orders || orders.length === 0) {
-        list.innerHTML = '<div class="empty">📭 Ничего не найдено</div>';
-        return;
-      }
-
-      orders.slice().reverse().forEach(function(order) {
-        var card = document.createElement('div');
-        card.className = 'order-card';
-
-        // Блок АВАНС
-        var avansHtml = '';
-        if (order.avans && order.avans.length > 0) {
-          var avansRows = order.avans.map(function(item) {
-            return '<div class="info-block-row">' +
-              '<span class="info-block-label">' + item.label + '</span>' +
-              '<span class="info-block-value">' + getStatusBadge(item.value) + '</span>' +
-            '</div>';
-          }).join('');
-          avansHtml =
-            '<div class="info-block">' +
-              '<div class="info-block-title">💰 АВАНС</div>' +
-              avansRows +
-            '</div>';
-        }
-
-        // Блок ЗАКРЫТИЕ ЗАТРАТ
-        var zakrHtml = '';
-        if (order.zakr && order.zakr.length > 0) {
-          var zakrRows = order.zakr.map(function(item) {
-            return '<div class="info-block-row">' +
-              '<span class="info-block-label">' + item.label + '</span>' +
-              '<span class="info-block-value">' + getStatusBadge(item.value) + '</span>' +
-            '</div>';
-          }).join('');
-          zakrHtml =
-            '<div class="info-block">' +
-              '<div class="info-block-title zakr">📋 ЗАКРЫТИЕ ЗАТРАТ</div>' +
-              zakrRows +
-            '</div>';
-        }
-
-        card.innerHTML =
-          '<div class="order-id">ID: ' + order.id + ' | ' + (order.date || '') + '</div>' +
-          '<div class="order-name">' + (order.contractor || '—') + '</div>' +
-          '<div class="order-info">' +
-            '🏗 ' + (order.branch || '—') + '<br>' +
-            '💳 ' + (order.paymentType || '—') +
-            (order.m15 ? ' | М-15: ' + order.m15 : '') +
-          '</div>' +
-          avansHtml +
-          zakrHtml +
-          '<div class="order-btns">' +
-            (order.folderUrl
-              ? '<a class="link-btn" href="' + order.folderUrl +
-                '" target="_blank">📁 Документы</a>'
-              : '') +
-            (order.fixFolderUrl
-              ? '<a class="link-btn green" href="' + order.fixFolderUrl +
-                '" target="_blank">✅ Исправленные</a>'
-              : '') +
-            '<button class="link-btn orange"' +
-              ' data-id="'      + order.id                  + '"' +
-              ' data-payment="' + (order.paymentType || '') + '"' +
-              ' data-m15="'     + (order.m15 || '')         + '">' +
-              (order.fixFolderUrl ? '🔄 Загрузить снова' : '⚠️ Исправленные') +
-            '</button>' +
-          '</div>';
-
-        list.appendChild(card);
-      });
-
-      // Делегирование клика на кнопки загрузки
-      list.addEventListener('click', function(e) {
-        var btn = e.target.closest('.link-btn.orange');
-        if (!btn) return;
-        openModal(
-          btn.dataset.id,
-          btn.dataset.payment,
-          btn.dataset.m15
-        );
-      });
-    }
-
-    // ── Модалка загрузки ──────────────────────────────────────────────
-    var currentOrderId   = '';
-    var currentPayment   = '';
-    var currentM15       = '';
-    var selectedFiles    = [];
-
-    function openModal(orderId, payment, m15) {
-      currentOrderId = orderId;
-      currentPayment = payment;
-      currentM15     = m15;
-      selectedFiles  = [];
-
-      document.getElementById('fileList').innerHTML    = '';
-      document.getElementById('progressWrap').style.display = 'none';
-      document.getElementById('progressBar').style.width    = '0%';
-      document.getElementById('progressText').textContent   = '0%';
-      document.getElementById('msgError').style.display     = 'none';
-      document.getElementById('msgSuccess').style.display   = 'none';
-      document.getElementById('modalBody').style.display    = '';
-      document.getElementById('btnUpload').disabled         = true;
-      document.getElementById('fileInput').value            = '';
-
-      document.getElementById('modalOverlay').classList.add('active');
-    }
-
-    document.getElementById('modalClose').addEventListener('click', function() {
-      document.getElementById('modalOverlay').classList.remove('active');
-    });
-    document.getElementById('modalOverlay').addEventListener('click', function(e) {
-      if (e.target === this)
-        this.classList.remove('active');
-    });
-
-    // Выбор файлов
-    document.getElementById('uploadZone').addEventListener('click', function() {
-      document.getElementById('fileInput').click();
-    });
-    document.getElementById('fileInput').addEventListener('change', function() {
-      Array.from(this.files).forEach(addFile);
-      this.value = '';
-    });
-
-    // Drag & drop
-    var zone = document.getElementById('uploadZone');
-    zone.addEventListener('dragover',  function(e) { e.preventDefault(); zone.style.background = '#f0f7ff'; });
-    zone.addEventListener('dragleave', function()  { zone.style.background = ''; });
-    zone.addEventListener('drop',      function(e) {
-      e.preventDefault();
-      zone.style.background = '';
-      Array.from(e.dataTransfer.files).forEach(addFile);
-    });
-
-    function addFile(file) {
-      selectedFiles.push(file);
-      renderFileList();
-    }
-
-    function renderFileList() {
-      var fl = document.getElementById('fileList');
-      fl.innerHTML = '';
-      selectedFiles.forEach(function(f, idx) {
-        var item = document.createElement('div');
-        item.className = 'file-item';
-        item.innerHTML =
-          '<span class="file-item-name">📄 ' + f.name + '</span>' +
-          '<button class="file-remove" data-idx="' + idx + '">✕</button>';
-        fl.appendChild(item);
-      });
-      document.getElementById('btnUpload').disabled = selectedFiles.length === 0;
-
-      fl.querySelectorAll('.file-remove').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-          selectedFiles.splice(parseInt(this.dataset.idx), 1);
-          renderFileList();
-        });
-      });
-    }
-
-    // Загрузка файлов
-    document.getElementById('btnUpload').addEventListener('click', function() {
-      if (!selectedFiles.length) return;
-
-      var pw   = document.getElementById('progressWrap');
-      var pb   = document.getElementById('progressBar');
-      var pt   = document.getElementById('progressText');
-      var err  = document.getElementById('msgError');
-      var succ = document.getElementById('msgSuccess');
-      var btn  = document.getElementById('btnUpload');
-
-      pw.style.display  = 'block';
-      err.style.display = 'none';
-      btn.disabled      = true;
-
-      var total     = selectedFiles.length;
-      var uploaded  = 0;
-      var hasError  = false;
-
-      function uploadNext(idx) {
-        if (idx >= total) {
-          if (!hasError) {
-            document.getElementById('modalBody').style.display = 'none';
-            succ.style.display = 'block';
-            setTimeout(function() {
-              document.getElementById('modalOverlay').classList.remove('active');
-            }, 2000);
-          }
+        if (result.status !== 'ok' || !result.orders || result.orders.length === 0) {
+          list.innerHTML = '<div class="empty">📭 Заявок не найдено</div>';
           return;
         }
 
-        var file   = selectedFiles[idx];
-        var reader = new FileReader();
+        window._allOrders = result.orders;
+        renderOrders(result.orders);
 
-        reader.onload = function(e) {
-          var base64 = e.target.result.split(',')[1];
-          fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              action:    'uploadFix',
-              tg_id:     TG_ID,
-              tg_username: TG_USER,
-              order_id:  currentOrderId,
-              payment:   currentPayment,
-              m15:       currentM15,
-              fileName:  file.name,
-              mimeType:  file.type,
-              fileData:  base64
-            })
-          })
-          .then(function(r) { return r.json(); })
-          .then(function(res) {
-            uploaded++;
-            var pct = Math.round(uploaded / total * 100);
-            pb.style.width      = pct + '%';
-            pt.textContent      = pct + '%';
-            if (res.status !== 'ok') {
-              hasError = true;
-              err.textContent   = '❌ Ошибка: ' + (res.message || 'неизвестно');
-              err.style.display = 'block';
-              btn.disabled      = false;
-            }
-            uploadNext(idx + 1);
-          })
-          .catch(function() {
-            hasError = true;
-            err.textContent   = '❌ Ошибка соединения';
-            err.style.display = 'block';
-            btn.disabled      = false;
+        document.getElementById('searchInput').addEventListener('input', function() {
+          var q = this.value.toLowerCase().trim();
+          if (!q) { renderOrders(window._allOrders); return; }
+          var filtered = window._allOrders.filter(function(o) {
+            return (o.id         && o.id.toLowerCase().includes(q)) ||
+                   (o.contractor && o.contractor.toLowerCase().includes(q)) ||
+                   (o.branch     && o.branch.toLowerCase().includes(q));
           });
-        };
-        reader.readAsDataURL(file);
+          renderOrders(filtered);
+        });
+      })
+      .catch(function(err) {
+        console.error('loadOrders error:', err);
+        list.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
+      });
+  }
+
+  // ── Рендер карточек ──────────────────────────────────────────────
+  function renderOrders(orders) {
+    var list = document.getElementById('orderList');
+    list.innerHTML = '';
+
+    if (!orders || orders.length === 0) {
+      list.innerHTML = '<div class="empty">📭 Ничего не найдено</div>';
+      return;
+    }
+
+    orders.slice().reverse().forEach(function(order) {
+      var card = document.createElement('div');
+      card.className = 'order-card';
+
+      // Блок АВАНС
+      var avansHtml = '';
+      if (order.avans && order.avans.length > 0) {
+        var rows = order.avans.map(function(item) {
+          return '<div class="info-block-row">' +
+            '<span class="info-block-label">' + item.label + '</span>' +
+            '<span class="info-block-value">' + getStatusBadge(item.value) + '</span>' +
+            '</div>';
+        }).join('');
+        avansHtml =
+          '<div class="info-block">' +
+            '<div class="info-block-title">💰 АВАНС</div>' +
+            rows +
+          '</div>';
       }
 
-      uploadNext(0);
+      // Блок ЗАКРЫТИЕ ЗАТРАТ
+      var zakrHtml = '';
+      if (order.zakr && order.zakr.length > 0) {
+        var rows2 = order.zakr.map(function(item) {
+          return '<div class="info-block-row">' +
+            '<span class="info-block-label">' + item.label + '</span>' +
+            '<span class="info-block-value">' + getStatusBadge(item.value) + '</span>' +
+            '</div>';
+        }).join('');
+        zakrHtml =
+          '<div class="info-block">' +
+            '<div class="info-block-title zakr">📋 ЗАКРЫТИЕ ЗАТРАТ</div>' +
+            rows2 +
+          '</div>';
+      }
+
+      card.innerHTML =
+        '<div class="order-id">ID: ' + order.id + ' | ' + (order.date || '') + '</div>' +
+        '<div class="order-name">' + (order.contractor || '—') + '</div>' +
+        '<div class="order-info">' +
+          '🏗 ' + (order.branch || '—') + '<br>' +
+          '💳 ' + (order.paymentType || '—') +
+          (order.m15 ? ' | М-15: ' + order.m15 : '') +
+        '</div>' +
+        avansHtml +
+        zakrHtml +
+        '<div class="order-btns">' +
+          (order.folderUrl
+            ? '<a class="link-btn" href="' + order.folderUrl + '" target="_blank">📁 Документы</a>'
+            : '') +
+          (order.fixFolderUrl
+            ? '<a class="link-btn green" href="' + order.fixFolderUrl + '" target="_blank">✅ Исправленные</a>'
+            : '') +
+          '<button class="link-btn orange"' +
+            ' data-id="'      + order.id + '"' +
+            ' data-payment="' + (order.paymentType || '') + '"' +
+            ' data-m15="'     + (order.m15 || '') + '">' +
+            (order.fixFolderUrl ? '🔄 Загрузить снова' : '⚠️ Исправленные') +
+          '</button>' +
+        '</div>';
+
+      list.appendChild(card);
     });
 
-    // ── Старт ─────────────────────────────────────────────────────────
-    loadOrders();
-  </script>
+    // Клик на кнопку исправленных (только один раз!)
+    list.onclick = function(e) {
+      var btn = e.target.closest('.link-btn.orange');
+      if (!btn) return;
+      openModal(btn.dataset.id, btn.dataset.payment, btn.dataset.m15);
+    };
+  }
+
+  // ── Модалка ──────────────────────────────────────────────────────
+  var currentOrderId = '';
+  var currentPayment = '';
+  var currentM15     = '';
+  var selectedFiles  = [];
+
+  function openModal(orderId, payment, m15) {
+    currentOrderId = orderId;
+    currentPayment = payment;
+    currentM15     = m15;
+    selectedFiles  = [];
+
+    document.getElementById('fileList').innerHTML         = '';
+    document.getElementById('progressWrap').style.display = 'none';
+    document.getElementById('progressBar').style.width    = '0%';
+    document.getElementById('progressText').textContent   = '0%';
+    document.getElementById('msgError').style.display     = 'none';
+    document.getElementById('msgSuccess').style.display   = 'none';
+    document.getElementById('modalBody').style.display    = '';
+    document.getElementById('btnUpload').disabled         = true;
+    document.getElementById('fileInput').value            = '';
+
+    document.getElementById('modalOverlay').classList.add('active');
+  }
+
+  document.getElementById('modalClose').onclick = function() {
+    document.getElementById('modalOverlay').classList.remove('active');
+  };
+  document.getElementById('modalOverlay').onclick = function(e) {
+    if (e.target === this) this.classList.remove('active');
+  };
+
+  document.getElementById('uploadZone').onclick = function() {
+    document.getElementById('fileInput').click();
+  };
+  document.getElementById('fileInput').onchange = function() {
+    Array.from(this.files).forEach(addFile);
+    this.value = '';
+  };
+
+  var zone = document.getElementById('uploadZone');
+  zone.addEventListener('dragover',  function(e) { e.preventDefault(); zone.style.background = '#f0f7ff'; });
+  zone.addEventListener('dragleave', function()  { zone.style.background = ''; });
+  zone.addEventListener('drop',      function(e) {
+    e.preventDefault();
+    zone.style.background = '';
+    Array.from(e.dataTransfer.files).forEach(addFile);
+  });
+
+  function addFile(file) {
+    selectedFiles.push(file);
+    renderFileList();
+  }
+
+  function renderFileList() {
+    var fl = document.getElementById('fileList');
+    fl.innerHTML = '';
+    selectedFiles.forEach(function(f, idx) {
+      var item = document.createElement('div');
+      item.className = 'file-item';
+      item.innerHTML =
+        '<span class="file-item-name">📄 ' + f.name + '</span>' +
+        '<button class="file-remove" data-idx="' + idx + '">✕</button>';
+      fl.appendChild(item);
+    });
+    document.getElementById('btnUpload').disabled = selectedFiles.length === 0;
+    fl.querySelectorAll('.file-remove').forEach(function(btn) {
+      btn.onclick = function() {
+        selectedFiles.splice(parseInt(this.dataset.idx), 1);
+        renderFileList();
+      };
+    });
+  }
+
+  document.getElementById('btnUpload').onclick = function() {
+    if (!selectedFiles.length) return;
+
+    var pw   = document.getElementById('progressWrap');
+    var pb   = document.getElementById('progressBar');
+    var pt   = document.getElementById('progressText');
+    var err  = document.getElementById('msgError');
+    var succ = document.getElementById('msgSuccess');
+    var btn  = document.getElementById('btnUpload');
+
+    pw.style.display  = 'block';
+    err.style.display = 'none';
+    btn.disabled      = true;
+
+    var total    = selectedFiles.length;
+    var uploaded = 0;
+    var hasError = false;
+
+    function uploadNext(idx) {
+      if (idx >= total) {
+        if (!hasError) {
+          document.getElementById('modalBody').style.display = 'none';
+          succ.style.display = 'block';
+          setTimeout(function() {
+            document.getElementById('modalOverlay').classList.remove('active');
+          }, 2000);
+        }
+        return;
+      }
+
+      var file   = selectedFiles[idx];
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            mode:        'fix',
+            tg_id:       TG_ID,
+            tg_username: TG_USER,
+            orderId:     currentOrderId,
+            fileName:    file.name,
+            fileData:    ev.target.result   // передаём полный dataURL
+          })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          uploaded++;
+          var pct = Math.round(uploaded / total * 100);
+          pb.style.width = pct + '%';
+          pt.textContent = pct + '%';
+          if (res.status !== 'ok') {
+            hasError = true;
+            err.textContent   = '❌ Ошибка: ' + (res.message || 'неизвестно');
+            err.style.display = 'block';
+            btn.disabled      = false;
+          }
+          uploadNext(idx + 1);
+        })
+        .catch(function() {
+          hasError = true;
+          err.textContent   = '❌ Ошибка соединения';
+          err.style.display = 'block';
+          btn.disabled      = false;
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    uploadNext(0);
+  };
+
+  // ── Старт ────────────────────────────────────────────────────────
+  loadOrders();
+</script>
 </body>
 </html>
