@@ -609,6 +609,12 @@ function renderOrders(orders) {
 
   list.innerHTML = '';
   orders.slice().reverse().forEach(function(order) {
+
+      // ВРЕМЕННО — для отладки
+  console.log('ID:', order.id);
+  console.log('avans:', JSON.stringify(order.avans));
+  console.log('zakr:', JSON.stringify(order.zakr));
+  
     var card = document.createElement('div');
     card.className = 'order-card';
 
