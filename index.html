@@ -316,49 +316,48 @@
   }
 
   // ── Загрузка заявок ──────────────────────────────────────────────
-  function loadOrders() {
-    var list = document.getElementById('orderList');
-    list.innerHTML = '<div class="loading">⏳ Загрузка заявок...</div>';
+function loadOrders() {
+  var list = document.getElementById('orderList');
+  list.innerHTML = '<div class="loading">⏳ Загрузка заявок...</div>';
 
-    // Передаём параметры через data= как ожидает doGet
-    var params = encodeURIComponent(JSON.stringify({
-      mode: 'getOrders',
-      tg_id: TG_ID,
-      tg_username: TG_USER
-    }));
+  var params = JSON.stringify({
+    mode: 'getOrders',
+    tg_id: TG_ID,
+    tg_username: TG_USER
+  });
 
-    fetch(SCRIPT_URL + '?data=' + params)
-      .then(function(r) { return r.json(); })
-      .then(function(result) {
-        // Отладка — убери после проверки
-        console.log('RESULT:', JSON.stringify(result));
+  fetch(SCRIPT_URL + '?data=' + encodeURIComponent(params))
+    .then(function(r) { return r.json(); })
+    .then(function(result) {
+      console.log('DEBUG result:', JSON.stringify(result));
 
-        list.innerHTML = '';
+      list.innerHTML = '';
 
-        if (result.status !== 'ok' || !result.orders || result.orders.length === 0) {
-          list.innerHTML = '<div class="empty">📭 Заявок не найдено</div>';
-          return;
-        }
+      if (result.status !== 'ok' || !result.orders || result.orders.length === 0) {
+        list.innerHTML = '<div class="empty">📭 Заявок не найдено<br><small style="color:#aaa">' 
+          + (result.message || '') + '</small></div>';
+        return;
+      }
 
-        window._allOrders = result.orders;
-        renderOrders(result.orders);
+      window._allOrders = result.orders;
+      renderOrders(result.orders);
 
-        document.getElementById('searchInput').addEventListener('input', function() {
-          var q = this.value.toLowerCase().trim();
-          if (!q) { renderOrders(window._allOrders); return; }
-          var filtered = window._allOrders.filter(function(o) {
-            return (o.id         && o.id.toLowerCase().includes(q)) ||
-                   (o.contractor && o.contractor.toLowerCase().includes(q)) ||
-                   (o.branch     && o.branch.toLowerCase().includes(q));
-          });
-          renderOrders(filtered);
+      document.getElementById('searchInput').addEventListener('input', function() {
+        var q = this.value.toLowerCase().trim();
+        if (!q) { renderOrders(window._allOrders); return; }
+        var filtered = window._allOrders.filter(function(o) {
+          return (o.id         && o.id.toLowerCase().includes(q)) ||
+                 (o.contractor && o.contractor.toLowerCase().includes(q)) ||
+                 (o.branch     && o.branch.toLowerCase().includes(q));
         });
-      })
-      .catch(function(err) {
-        console.error('loadOrders error:', err);
-        list.innerHTML = '<div class="empty">❌ Ошибка загрузки</div>';
+        renderOrders(filtered);
       });
-  }
+    })
+    .catch(function(err) {
+      console.error('loadOrders error:', err);
+      list.innerHTML = '<div class="empty">❌ Ошибка: ' + err.toString() + '</div>';
+    });
+}
 
   // ── Рендер карточек ──────────────────────────────────────────────
   function renderOrders(orders) {
