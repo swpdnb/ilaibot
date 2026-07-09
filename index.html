@@ -507,46 +507,77 @@ async function loadOrders() {
     }
 
     list.innerHTML = '';
-    result.orders.slice().reverse().forEach(function(order) {
-      var card = document.createElement('div');
-      card.className = 'order-card';
+result.orders.slice().reverse().forEach(function(order) {
+  var card = document.createElement('div');
+  card.className = 'order-card';
 
-      // Бейдж связанной заявки
-      var linkedBadge = '';
-      if (order.linkedOrderId) {
-        linkedBadge =
-          ' <span style="background:#fff3cd;color:#856404;padding:2px 7px;' +
-          'border-radius:4px;font-size:11px;">🔗 Доплата к №' + order.linkedOrderId + '</span>';
-      }
+  // Бейдж связанной заявки
+  var linkedBadge = '';
+  if (order.linkedOrderId) {
+    linkedBadge =
+      ' <span style="background:#fff3cd;color:#856404;padding:2px 7px;' +
+      'border-radius:4px;font-size:11px;">🔗 Доплата к №' + order.linkedOrderId + '</span>';
+  }
 
-      card.innerHTML =
-        '<div class="order-id">ID: ' + order.id + ' | ' + (order.date || '') + linkedBadge + '</div>' +
-        '<div class="order-name">' + (order.contractor || '—') + '</div>' +
-        '<div class="order-info">' +
-          '🏗 ' + (order.branch || '—') + '<br>' +
-          '💰 ' + (order.paymentType || '—') +
-          (order.m15 ? ' | М-15: ' + order.m15 : '') +
-        '</div>' +
-        '<div class="order-btns">' +
-          (order.folderUrl
-            ? '<a class="link-btn" href="' + order.folderUrl + '" target="_blank">📁 Документы</a>'
-            : '') +
-          (order.linkedFolderUrl
-            ? '<a class="link-btn gray" href="' + order.linkedFolderUrl + '" target="_blank">📂 Предоплата</a>'
-            : '') +
-          (order.fixFolderUrl
-            ? '<a class="link-btn green" href="' + order.fixFolderUrl + '" target="_blank">✅ Исправленные</a>'
-            : '') +
-          '<button class="link-btn orange"' +
-            ' data-id="'      + order.id                    + '"' +
-            ' data-payment="' + (order.paymentType || '')   + '"' +
-            ' data-m15="'     + (order.m15 || '')           + '">' +
-            (order.fixFolderUrl ? '🔄 Загрузить снова' : '⚠️ Исправленные') +
-          '</button>' +
-        '</div>';
+  // Блок АВАНС
+  var avansHtml = '';
+  if (order.avans && order.avans.length > 0) {
+    var rows = order.avans.map(function(item) {
+      return '<div class="info-block-row">' +
+        '<span class="info-block-label">' + item.label + '</span>' +
+        '<span class="info-block-value">' + item.value + '</span>' +
+      '</div>';
+    }).join('');
+    avansHtml =
+      '<div class="info-block">' +
+        '<div class="info-block-title">💰 АВАНС</div>' +
+        rows +
+      '</div>';
+  }
 
-      list.appendChild(card);
-    });
+  // Блок ЗАКРЫТИЕ ЗАТРАТ
+  var zakrHtml = '';
+  if (order.zakr && order.zakr.length > 0) {
+    var rows = order.zakr.map(function(item) {
+      return '<div class="info-block-row">' +
+        '<span class="info-block-label">' + item.label + '</span>' +
+        '<span class="info-block-value">' + item.value + '</span>' +
+      '</div>';
+    }).join('');
+    zakrHtml =
+      '<div class="info-block">' +
+        '<div class="info-block-title zakr">📋 ЗАКРЫТИЕ ЗАТРАТ</div>' +
+        rows +
+      '</div>';
+  }
+
+  card.innerHTML =
+    '<div class="order-id">ID: ' + order.id + ' | ' + (order.date || '') + linkedBadge + '</div>' +
+    '<div class="order-name">' + (order.contractor || '—') + '</div>' +
+    '<div class="order-info">' +
+      '🏗 ' + (order.branch || '—') + '<br>' +
+      '💰 ' + (order.paymentType || '—') +
+      (order.m15 ? ' | М-15: ' + order.m15 : '') +
+    '</div>' +
+    avansHtml +
+    zakrHtml +
+    '<div class="order-btns" style="margin-top:10px;">' +
+      (order.folderUrl
+        ? '<a class="link-btn" href="' + order.folderUrl + '" target="_blank">📁 Документы</a>'
+        : '') +
+      (order.fixFolderUrl
+        ? '<a class="link-btn green" href="' + order.fixFolderUrl + '" target="_blank">✅ Исправленные</a>'
+        : '') +
+      '<button class="link-btn orange"' +
+        ' data-id="'      + order.id                  + '"' +
+        ' data-payment="' + (order.paymentType || '') + '"' +
+        ' data-m15="'     + (order.m15 || '')         + '">' +
+        (order.fixFolderUrl ? '🔄 Загрузить снова' : '⚠️ Исправленные') +
+      '</button>' +
+    '</div>';
+
+  list.appendChild(card);
+});
 
     // Навешиваем обработчики на кнопки исправленных
     list.querySelectorAll('button[data-id]').forEach(function(b) {
