@@ -972,12 +972,20 @@ async function loadDocMeta(contractorSelectId, signerSelectId) {
   try {
     var payload = { mode: 'getDocMeta' };
     var resp    = await fetch(SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(payload)));
-    var result  = await resp.json();
+    var text    = await resp.text();
+    var result;
+    try {
+      result = JSON.parse(text);
+    } catch(parseErr) {
+      contractorSelect.innerHTML = '<option value="">❌ ' + text.substring(0, 60) + '</option>';
+      signerSelect.innerHTML     = '<option value="">❌ Не JSON-ответ</option>';
+      return;
+    }
     docMetaCache = result;
     fillDocSelects(contractorSelect, signerSelect);
   } catch(err) {
-    contractorSelect.innerHTML = '<option value="">❌ Ошибка загрузки</option>';
-    signerSelect.innerHTML     = '<option value="">❌ Ошибка загрузки</option>';
+    contractorSelect.innerHTML = '<option value="">❌ ' + err.message + '</option>';
+    signerSelect.innerHTML     = '<option value="">❌ ' + err.message + '</option>';
   }
 }
 
