@@ -529,6 +529,27 @@ let currentMain       = '';
 let currentSub        = '';
 let currentFixOrderId = '';
 let cachedOrders      = [];
+let currentLinkedContractMeta = null;
+
+function applyContractMetaBasics(meta) {
+  if (!meta) return;
+  if (meta.docNum)  document.getElementById('dg-main-num').value  = meta.docNum;
+  if (meta.docDate) document.getElementById('dg-main-date').value = meta.docDate;
+
+  var mappedWork = meta.workType === 'Давальческие' ? 'Давальческое' : 'Иждивение';
+  if (mappedWork === 'Давальческое') {
+    document.getElementById('dg-btn-dav').click();
+  } else {
+    document.getElementById('dg-btn-izh').click();
+  }
+
+  if (meta.nds === 'Без НДС') {
+    document.getElementById('dg-btn-nonds').click();
+  } else {
+    document.getElementById('dg-btn-nds').click();
+    if (meta.ndsRate) document.getElementById('dg-nds-rate').value = meta.ndsRate;
+  }
+}
 
 // ===== ЭКРАНЫ =====
 function showScreen(id) {
@@ -629,16 +650,20 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   var details    = document.getElementById('linked-order-details');
   var link       = document.getElementById('linked-order-link');
 
-  if (!selectedId || selectedId === 'none') {
+if (!selectedId || selectedId === 'none') {
     infoBlock.style.display = 'none';
     document.getElementById('contractor').value = '';
     document.getElementById('branch').value     = '';
     document.getElementById('form-fields').classList.add('active');
+    currentLinkedContractMeta = null;
     return;
   }
 
   var order = cachedOrders.find(function(o) { return o.id === selectedId; });
-  if (!order) { infoBlock.style.display = 'none'; return; }
+  if (!order) { infoBlock.style.display = 'none'; currentLinkedContractMeta = null; return; }
+
+  currentLinkedContractMeta = order.contractMeta || null;
+  applyContractMetaBasics(currentLinkedContractMeta);
 
   details.innerHTML =
     '<b>ID:</b> ' + order.id + '<br>' +
@@ -664,15 +689,24 @@ function resetDsGenerateCheckbox() {
   var chk = document.getElementById('ds-need-checkbox');
   chk.checked = false;
   document.getElementById('ds-generate-block').style.display = 'none';
+  currentLinkedContractMeta = null;
 }
 
-document.getElementById('ds-need-checkbox').addEventListener('change', function() {
+document.getElementById('ds-need-checkbox').addEventListener('change', async function() {
   var block = document.getElementById('ds-generate-block');
   var fileField = document.getElementById('f-дс');
   if (this.checked) {
     block.style.display = 'block';
     if (fileField) fileField.style.display = 'none';
-    loadDocMeta('dg-contractor', 'dg-signer');
+    await loadDocMeta('dg-contractor', 'dg-signer');
+    if (currentLinkedContractMeta) {
+      if (currentLinkedContractMeta.contractorKey) {
+        document.getElementById('dg-contractor').value = currentLinkedContractMeta.contractorKey;
+      }
+      if (currentLinkedContractMeta.signerKey) {
+        document.getElementById('dg-signer').value = currentLinkedContractMeta.signerKey;
+      }
+    }
   } else {
     block.style.display = 'none';
     if (fileField) fileField.style.display = 'block';
