@@ -160,6 +160,8 @@
     .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
     .checkbox-row input[type="checkbox"] { width: auto; }
     .checkbox-row label { margin-bottom: 0; }
+
+    .meta-hint { font-size: 11px; color: #2481cc; margin-top: -8px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -213,6 +215,10 @@
     </div>
 
     <div id="ds-generate-block">
+      <div id="dg-meta-hint" class="meta-hint" style="display:none;">
+        ✅ Данные договора подставлены из предоплаты
+      </div>
+
       <div class="section-title">Вариант</div>
       <div class="type-buttons" id="dg-work-buttons">
         <button type="button" class="btn active" id="dg-btn-izh">Иждивение (№2)</button>
@@ -531,8 +537,14 @@ let currentFixOrderId = '';
 let cachedOrders      = [];
 let currentLinkedContractMeta = null;
 
+// Применяет данные договора из предоплаты к форме ДС (кроме № ДС, дат ремонта и суммы ДС — их вводят вручную)
 function applyContractMetaBasics(meta) {
-  if (!meta) return;
+  var hint = document.getElementById('dg-meta-hint');
+  if (!meta) {
+    hint.style.display = 'none';
+    return;
+  }
+
   if (meta.docNum)  document.getElementById('dg-main-num').value  = meta.docNum;
   if (meta.docDate) document.getElementById('dg-main-date').value = meta.docDate;
 
@@ -549,6 +561,8 @@ function applyContractMetaBasics(meta) {
     document.getElementById('dg-btn-nds').click();
     if (meta.ndsRate) document.getElementById('dg-nds-rate').value = meta.ndsRate;
   }
+
+  hint.style.display = 'block';
 }
 
 // ===== ЭКРАНЫ =====
@@ -650,7 +664,7 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   var details    = document.getElementById('linked-order-details');
   var link       = document.getElementById('linked-order-link');
 
-if (!selectedId || selectedId === 'none') {
+  if (!selectedId || selectedId === 'none') {
     infoBlock.style.display = 'none';
     document.getElementById('contractor').value = '';
     document.getElementById('branch').value     = '';
@@ -661,9 +675,6 @@ if (!selectedId || selectedId === 'none') {
 
   var order = cachedOrders.find(function(o) { return o.id === selectedId; });
   if (!order) { infoBlock.style.display = 'none'; currentLinkedContractMeta = null; return; }
-
-  currentLinkedContractMeta = order.contractMeta || null;
-  applyContractMetaBasics(currentLinkedContractMeta);
 
   details.innerHTML =
     '<b>ID:</b> ' + order.id + '<br>' +
@@ -682,6 +693,8 @@ if (!selectedId || selectedId === 'none') {
   document.getElementById('contractor').value = order.contractor || '';
   document.getElementById('branch').value     = order.branch     || '';
   document.getElementById('form-fields').classList.add('active');
+
+  currentLinkedContractMeta = order.contractMeta || null;
 });
 
 // ===== ДС В ДОПЛАТЕ: ЧЕКБОКС "ТРЕБУЕТСЯ ДОП. СОГЛАШЕНИЕ?" =====
@@ -689,6 +702,7 @@ function resetDsGenerateCheckbox() {
   var chk = document.getElementById('ds-need-checkbox');
   chk.checked = false;
   document.getElementById('ds-generate-block').style.display = 'none';
+  document.getElementById('dg-meta-hint').style.display = 'none';
   currentLinkedContractMeta = null;
 }
 
@@ -699,6 +713,7 @@ document.getElementById('ds-need-checkbox').addEventListener('change', async fun
     block.style.display = 'block';
     if (fileField) fileField.style.display = 'none';
     await loadDocMeta('dg-contractor', 'dg-signer');
+
     if (currentLinkedContractMeta) {
       if (currentLinkedContractMeta.contractorKey) {
         document.getElementById('dg-contractor').value = currentLinkedContractMeta.contractorKey;
@@ -706,6 +721,7 @@ document.getElementById('ds-need-checkbox').addEventListener('change', async fun
       if (currentLinkedContractMeta.signerKey) {
         document.getElementById('dg-signer').value = currentLinkedContractMeta.signerKey;
       }
+      applyContractMetaBasics(currentLinkedContractMeta);
     }
   } else {
     block.style.display = 'none';
