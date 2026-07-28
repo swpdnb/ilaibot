@@ -137,8 +137,10 @@
 
     .fix-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 10px; border-radius: 6px; margin-bottom: 14px; font-size: 13px; text-align: center; }
 
-    #sub-block     { display: none; margin-bottom: 12px; }
-    #doplata-block { display: none; margin-bottom: 12px; }
+    #sub-block      { display: none; margin-bottom: 12px; }
+    #doplata-block  { display: none; margin-bottom: 12px; }
+    #contract-block { display: none; margin-bottom: 12px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    #ds-generate-block { display: none; margin-top: 10px; padding: 12px; background: #f8f9fb; border-radius: 8px; border: 1px solid #e0e0e0; }
 
     .doplata-order-select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
 
@@ -154,6 +156,10 @@
     .search-wrap input:focus { border-color: #2481cc; }
 
     .section-title { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #555; }
+
+    .checkbox-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .checkbox-row input[type="checkbox"] { width: auto; }
+    .checkbox-row label { margin-bottom: 0; }
   </style>
 </head>
 <body>
@@ -184,7 +190,7 @@
   <button class="back-btn" id="back-from-new">← Назад</button>
 
   <div class="section-title">Тип оплаты</div>
-  <div class="type-buttons">
+  <div class="type-buttons" id="payment-type-buttons">
     <button type="button" class="btn" id="btn-status1">Предоплата<br>(Аванс)</button>
     <button type="button" class="btn" id="btn-status2">Доплата<br>(остаток)</button>
     <button type="button" class="btn" id="btn-status3">Оплата<br>(100%)</button>
@@ -200,6 +206,59 @@
       <div id="linked-order-details"></div>
       <a id="linked-order-link" href="#" target="_blank">📁 Открыть документы предоплаты</a>
     </div>
+
+    <div class="checkbox-row">
+      <input type="checkbox" id="ds-need-checkbox">
+      <label for="ds-need-checkbox">Требуется доп. соглашение?</label>
+    </div>
+
+    <div id="ds-generate-block">
+      <div class="section-title">Вариант</div>
+      <div class="type-buttons" id="dg-work-buttons">
+        <button type="button" class="btn active" id="dg-btn-izh">Иждивение (№2)</button>
+        <button type="button" class="btn" id="dg-btn-dav">Давальческое (№4)</button>
+      </div>
+
+      <div class="form-group">
+        <label>Что меняется в ДС?</label>
+        <select id="dg-type">
+          <option value="И сроки и сумма">И сроки и сумма</option>
+          <option value="Только сроки">Только сроки</option>
+          <option value="Только сумма">Только сумма</option>
+        </select>
+      </div>
+
+      <div class="type-buttons" id="dg-nds-buttons">
+        <button type="button" class="btn active" id="dg-btn-nds">С НДС</button>
+        <button type="button" class="btn" id="dg-btn-nonds">Без НДС</button>
+      </div>
+      <div class="form-group" id="dg-nds-rate-group">
+        <label>Ставка НДС</label>
+        <select id="dg-nds-rate">
+          <option value="5">5%</option>
+          <option value="7">7%</option>
+          <option value="20">20%</option>
+          <option value="22" selected>22%</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Подрядчик</label>
+        <select id="dg-contractor"><option value="">⏳ Загрузка...</option></select>
+      </div>
+      <div class="form-group">
+        <label>Наш подписант</label>
+        <select id="dg-signer"><option value="">⏳ Загрузка...</option></select>
+      </div>
+
+      <div class="form-group"><label>№ Доп. соглашения</label><input type="text" id="dg-num"></div>
+      <div class="form-group"><label>Дата ДС (ДД.ММ.ГГГГ)</label><input type="text" id="dg-date" placeholder="01.01.2026"></div>
+      <div class="form-group"><label>№ Основного договора</label><input type="text" id="dg-main-num"></div>
+      <div class="form-group"><label>Дата Основного договора</label><input type="text" id="dg-main-date" placeholder="01.01.2026"></div>
+      <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="text" id="dg-start" placeholder="01.01.2026"></div>
+      <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="text" id="dg-end" placeholder="01.01.2026"></div>
+      <div class="form-group" id="dg-price-group"><label>Итоговая сумма по ДС</label><input type="text" id="dg-price" placeholder="100000"></div>
+    </div>
   </div>
 
   <div id="sub-block">
@@ -207,6 +266,62 @@
     <div class="type-buttons">
       <button type="button" class="btn" id="btn-sub1">Иждивение</button>
       <button type="button" class="btn" id="btn-sub2">Давальческое</button>
+    </div>
+  </div>
+
+  <div id="contract-block">
+    <div class="section-title">Договор</div>
+    <div class="type-buttons">
+      <button type="button" class="btn active" id="contract-mode-upload">📎 Загрузить файл</button>
+      <button type="button" class="btn" id="contract-mode-generate">📝 Сформировать в боте</button>
+    </div>
+
+    <div id="contract-upload-part">
+      <div class="form-group"><label>📄 Договор (файл)</label><input type="file" id="i-договор"></div>
+    </div>
+
+    <div id="contract-generate-part" style="display:none;">
+      <div class="type-buttons">
+        <button type="button" class="btn active" id="cg-btn-izh">Иждивение</button>
+        <button type="button" class="btn" id="cg-btn-dav">Давальческие</button>
+      </div>
+      <div class="type-buttons">
+        <button type="button" class="btn active" id="cg-btn-nds">С НДС</button>
+        <button type="button" class="btn" id="cg-btn-nonds">Без НДС</button>
+      </div>
+      <div class="form-group" id="cg-nds-rate-group">
+        <label>Ставка НДС</label>
+        <select id="cg-nds-rate">
+          <option value="5">5%</option>
+          <option value="7">7%</option>
+          <option value="20">20%</option>
+          <option value="22" selected>22%</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Вид работ</label>
+        <select id="cg-work-kind">
+          <option value="Строительно-монтажные работы">Строительно-монтажные работы</option>
+          <option value="Электромонтажные работы">Электромонтажные работы</option>
+          <option value="Слаботочные работы">Слаботочные работы</option>
+          <option value="Замеры помещения">Замеры помещения</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Подрядчик (для договора)</label>
+        <select id="cg-contractor"><option value="">⏳ Загрузка...</option></select>
+      </div>
+      <div class="form-group">
+        <label>Наш подписант</label>
+        <select id="cg-signer"><option value="">⏳ Загрузка...</option></select>
+      </div>
+      <div class="form-group"><label>№ договора</label><input type="text" id="cg-num"></div>
+      <div class="form-group"><label>Дата (ДД.ММ.ГГГГ)</label><input type="text" id="cg-date" placeholder="01.01.2026"></div>
+      <div class="form-group"><label>Адрес объекта</label><input type="text" id="cg-addr"></div>
+      <div class="form-group"><label>Начало (ДД.ММ.ГГГГ)</label><input type="text" id="cg-start" placeholder="01.01.2026"></div>
+      <div class="form-group"><label>Конец (ДД.ММ.ГГГГ)</label><input type="text" id="cg-end" placeholder="01.01.2026"></div>
+      <div class="form-group"><label>Сумма ИТОГО</label><input type="text" id="cg-price" placeholder="100000"></div>
+      <div class="form-group"><label>Аванс %</label><input type="text" id="cg-adv" value="30"></div>
     </div>
   </div>
 
@@ -221,7 +336,6 @@
         <input type="text" id="branch" placeholder="Название филиала" required>
       </div>
       <div class="form-group" id="f-смета"   style="display:none;"><label>📄 Смета</label><input type="file" id="i-смета"></div>
-      <div class="form-group" id="f-договор" style="display:none;"><label>📄 Договор</label><input type="file" id="i-договор"></div>
       <div class="form-group" id="f-счет"    style="display:none;"><label>📄 Счет на оплату</label><input type="file" id="i-счет"></div>
       <div class="form-group" id="f-дс"      style="display:none;"><label>📄 Доп. соглашение</label><input type="file" id="i-дс"></div>
       <div class="form-group" id="f-кс2"     style="display:none;"><label>📄 КС-2</label><input type="file" id="i-кс2"></div>
@@ -271,7 +385,7 @@
   </div>
 </div>
 
-<!-- ЭКРАН 6: ФОРМА ДОГОВОРА -->
+<!-- ЭКРАН 6: ФОРМА ДОГОВОРА (отдельный экран) -->
 <div id="screen-contract" class="screen">
   <div class="page-header">📄 Формирование договора</div>
   <button class="back-btn" id="back-from-contract">← Назад</button>
@@ -288,13 +402,13 @@
     </div>
 
     <div class="section-title">Тип работ</div>
-    <div class="type-buttons">
+    <div class="type-buttons" id="c-work-buttons">
       <button type="button" class="btn active" id="c-btn-izh">Иждивение</button>
       <button type="button" class="btn" id="c-btn-dav">Давальческие</button>
     </div>
 
     <div class="section-title">Налогообложение</div>
-    <div class="type-buttons">
+    <div class="type-buttons" id="c-nds-buttons">
       <button type="button" class="btn active" id="c-btn-nds">С НДС</button>
       <button type="button" class="btn" id="c-btn-nonds">Без НДС</button>
     </div>
@@ -331,14 +445,14 @@
   </div>
 </div>
 
-<!-- ЭКРАН 7: ФОРМА ДС -->
+<!-- ЭКРАН 7: ФОРМА ДС (отдельный экран) -->
 <div id="screen-ds" class="screen">
   <div class="page-header">📋 Формирование доп. соглашения</div>
   <button class="back-btn" id="back-from-ds">← Назад</button>
 
   <div class="form-box active">
     <div class="section-title">Вариант</div>
-    <div class="type-buttons">
+    <div class="type-buttons" id="ds-work-buttons">
       <button type="button" class="btn active" id="ds-btn-izh">Иждивение (№2)</button>
       <button type="button" class="btn" id="ds-btn-dav">Давальческое (№4)</button>
     </div>
@@ -353,7 +467,7 @@
     </div>
 
     <div class="section-title">Налогообложение</div>
-    <div class="type-buttons">
+    <div class="type-buttons" id="ds-nds-buttons">
       <button type="button" class="btn active" id="ds-btn-nds">С НДС</button>
       <button type="button" class="btn" id="ds-btn-nonds">Без НДС</button>
     </div>
@@ -452,7 +566,7 @@ function selectMain(type) {
   currentSub  = '';
 
   document.querySelectorAll('#sub-block .btn').forEach(function(b) { b.classList.remove('active'); });
-  document.querySelectorAll('.type-buttons .btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('#payment-type-buttons .btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('btn-' + type).classList.add('active');
 
   hideAllFields();
@@ -460,9 +574,13 @@ function selectMain(type) {
   document.getElementById('sub-block').style.display         = 'none';
   document.getElementById('doplata-block').style.display     = 'none';
   document.getElementById('linked-order-info').style.display = 'none';
+  document.getElementById('contract-block').style.display    = 'none';
+  resetDsGenerateCheckbox();
 
   if (type === 'status1') {
-    showFields(['f-смета', 'f-договор', 'f-счет']);
+    showFields(['f-смета', 'f-счет']);
+    document.getElementById('contract-block').style.display = 'block';
+    loadDocMeta('cg-contractor', 'cg-signer');
     document.getElementById('form-fields').classList.add('active');
   } else if (type === 'status2') {
     document.getElementById('doplata-block').style.display = 'block';
@@ -470,6 +588,8 @@ function selectMain(type) {
     loadDoplataOrders();
   } else if (type === 'status3') {
     document.getElementById('sub-block').style.display = 'block';
+    document.getElementById('contract-block').style.display = 'block';
+    loadDocMeta('cg-contractor', 'cg-signer');
     document.getElementById('form-fields').classList.add('active');
   }
 }
@@ -539,7 +659,70 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   document.getElementById('form-fields').classList.add('active');
 });
 
-// ===== ПОДТИП =====
+// ===== ДС В ДОПЛАТЕ: ЧЕКБОКС "ТРЕБУЕТСЯ ДОП. СОГЛАШЕНИЕ?" =====
+function resetDsGenerateCheckbox() {
+  var chk = document.getElementById('ds-need-checkbox');
+  chk.checked = false;
+  document.getElementById('ds-generate-block').style.display = 'none';
+}
+
+document.getElementById('ds-need-checkbox').addEventListener('change', function() {
+  var block = document.getElementById('ds-generate-block');
+  var fileField = document.getElementById('f-дс');
+  if (this.checked) {
+    block.style.display = 'block';
+    if (fileField) fileField.style.display = 'none';
+    loadDocMeta('dg-contractor', 'dg-signer');
+  } else {
+    block.style.display = 'none';
+    if (fileField) fileField.style.display = 'block';
+  }
+});
+
+document.getElementById('dg-contractor').addEventListener('change', function() {
+  if (this.value) document.getElementById('contractor').value = this.value;
+});
+
+var dgWork = 'Иждивение';
+var dgNds  = 'С НДС';
+
+document.getElementById('dg-btn-izh').addEventListener('click', function() {
+  dgWork = 'Иждивение';
+  document.getElementById('dg-btn-izh').classList.add('active');
+  document.getElementById('dg-btn-dav').classList.remove('active');
+});
+document.getElementById('dg-btn-dav').addEventListener('click', function() {
+  dgWork = 'Давальческое';
+  document.getElementById('dg-btn-dav').classList.add('active');
+  document.getElementById('dg-btn-izh').classList.remove('active');
+});
+document.getElementById('dg-btn-nds').addEventListener('click', function() {
+  dgNds = 'С НДС';
+  document.getElementById('dg-btn-nds').classList.add('active');
+  document.getElementById('dg-btn-nonds').classList.remove('active');
+  if (document.getElementById('dg-type').value !== 'Только сроки') {
+    document.getElementById('dg-nds-rate-group').style.display = 'block';
+  }
+});
+document.getElementById('dg-btn-nonds').addEventListener('click', function() {
+  dgNds = 'Без НДС';
+  document.getElementById('dg-btn-nonds').classList.add('active');
+  document.getElementById('dg-btn-nds').classList.remove('active');
+  document.getElementById('dg-nds-rate-group').style.display = 'none';
+});
+document.getElementById('dg-type').addEventListener('change', function() {
+  var dsType = this.value;
+  var showDates = dsType !== 'Только сумма';
+  var showPrice = dsType !== 'Только сроки';
+
+  document.getElementById('dg-start-group').style.display = showDates ? 'block' : 'none';
+  document.getElementById('dg-end-group').style.display   = showDates ? 'block' : 'none';
+  document.getElementById('dg-price-group').style.display = showPrice ? 'block' : 'none';
+  document.getElementById('dg-nds-rate-group').style.display =
+    (showPrice && dgNds === 'С НДС') ? 'block' : 'none';
+});
+
+// ===== ПОДТИП (Иждивение/Давальческое для набора файлов) =====
 document.getElementById('btn-sub1').addEventListener('click', function() { selectSub('иждивение'); });
 document.getElementById('btn-sub2').addEventListener('click', function() { selectSub('давальческое'); });
 
@@ -554,10 +737,15 @@ function selectSub(sub) {
     showFields(['f-смета', 'f-дс', 'f-кс2', 'f-кс3', 'f-упд', 'f-отчет', 'f-m15', 'f-счет']);
   }
   document.getElementById('form-fields').classList.add('active');
+
+  // Если в Доплате уже включена генерация ДС — файл ДС остаётся скрытым
+  if (currentMain === 'status2' && document.getElementById('ds-need-checkbox').checked) {
+    document.getElementById('f-дс').style.display = 'none';
+  }
 }
 
 function hideAllFields() {
-  ['f-смета','f-договор','f-счет','f-дс','f-кс2','f-кс3','f-упд','f-отчет','f-m15'].forEach(function(id) {
+  ['f-смета','f-счет','f-дс','f-кс2','f-кс3','f-упд','f-отчет','f-m15'].forEach(function(id) {
     var el = document.getElementById(id);
     if (el) el.style.display = 'none';
   });
@@ -569,6 +757,54 @@ function showFields(ids) {
     if (el) el.style.display = 'block';
   });
 }
+
+// ===== ДОГОВОР (для Предоплаты и Оплаты100): ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА =====
+var contractGenerateMode = false;
+
+document.getElementById('contract-mode-upload').addEventListener('click', function() {
+  contractGenerateMode = false;
+  document.getElementById('contract-mode-upload').classList.add('active');
+  document.getElementById('contract-mode-generate').classList.remove('active');
+  document.getElementById('contract-upload-part').style.display = 'block';
+  document.getElementById('contract-generate-part').style.display = 'none';
+});
+document.getElementById('contract-mode-generate').addEventListener('click', function() {
+  contractGenerateMode = true;
+  document.getElementById('contract-mode-generate').classList.add('active');
+  document.getElementById('contract-mode-upload').classList.remove('active');
+  document.getElementById('contract-upload-part').style.display = 'none';
+  document.getElementById('contract-generate-part').style.display = 'block';
+});
+
+document.getElementById('cg-contractor').addEventListener('change', function() {
+  if (this.value) document.getElementById('contractor').value = this.value;
+});
+
+var cgWorkType = 'Иждивение';
+var cgNds      = 'С НДС';
+
+document.getElementById('cg-btn-izh').addEventListener('click', function() {
+  cgWorkType = 'Иждивение';
+  document.getElementById('cg-btn-izh').classList.add('active');
+  document.getElementById('cg-btn-dav').classList.remove('active');
+});
+document.getElementById('cg-btn-dav').addEventListener('click', function() {
+  cgWorkType = 'Давальческие';
+  document.getElementById('cg-btn-dav').classList.add('active');
+  document.getElementById('cg-btn-izh').classList.remove('active');
+});
+document.getElementById('cg-btn-nds').addEventListener('click', function() {
+  cgNds = 'С НДС';
+  document.getElementById('cg-btn-nds').classList.add('active');
+  document.getElementById('cg-btn-nonds').classList.remove('active');
+  document.getElementById('cg-nds-rate-group').style.display = 'block';
+});
+document.getElementById('cg-btn-nonds').addEventListener('click', function() {
+  cgNds = 'Без НДС';
+  document.getElementById('cg-btn-nonds').classList.add('active');
+  document.getElementById('cg-btn-nds').classList.remove('active');
+  document.getElementById('cg-nds-rate-group').style.display = 'none';
+});
 
 // ===== ФАЙЛ → BASE64 =====
 function readFile(inputId) {
@@ -587,34 +823,28 @@ function getStatusBadge(value) {
   if (!value) return '<span class="badge-plain">—</span>';
   var v = value.toString().toLowerCase().trim();
 
-  // Зелёный — положительные / завершённые
   if (v === 'оплачено')  return '<span class="badge badge-green">' + value + '</span>';
   if (v === 'закрыты')   return '<span class="badge badge-green">' + value + '</span>';
   if (v === 'получено')  return '<span class="badge badge-green">' + value + '</span>';
   if (v === 'да' || v === 'есть' || v === 'подписан' || v === 'готово' || v === 'норм')
     return '<span class="badge badge-green">' + value + '</span>';
 
-  // Синий — в процессе / ожидание
   if (v === 'в очереди на оплату') return '<span class="badge badge-blue">' + value + '</span>';
   if (v === 'в работе' || v === 'в процессе') return '<span class="badge badge-blue">' + value + '</span>';
   if (v === 'ждем трек номер') return '<span class="badge badge-blue">' + value + '</span>';
   if (v === 'азат проверил') return '<span class="badge badge-blue">' + value + '</span>';
   if (v === 'ожидание отчета') return '<span class="badge badge-blue">' + value + '</span>';
 
-  // Жёлтый — требует внимания / согласования
   if (v === 'на согласовании') return '<span class="badge badge-yellow">' + value + '</span>';
   if (v === 'на исправлении') return '<span class="badge badge-yellow">' + value + '</span>';
   if (v === 'в закреплении') return '<span class="badge badge-yellow">' + value + '</span>';
   if (v === 'ожид ориг') return '<span class="badge badge-yellow">' + value + '</span>';
 
-  // Фиолетовый — ожидание оригинала/выгрузки
   if (v === 'ожидание оригинала/выгрузки' || v === 'ожидаем оригинал/выгрузки')
     return '<span class="badge badge-purple">' + value + '</span>';
 
-  // Оранжевый — бинарное "нет"
   if (v === 'нет' || v === 'отсутствует') return '<span class="badge badge-orange">' + value + '</span>';
 
-  // Красный — проблемные статусы
   if (v === 'ждем счет') return '<span class="badge badge-red">' + value + '</span>';
   if (v === 'отказ') return '<span class="badge badge-red">' + value + '</span>';
   if (v === 'нет документа' || v === 'нет договора') return '<span class="badge badge-red">' + value + '</span>';
@@ -655,15 +885,30 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     }
   }
 
+  // Валидация генерации договора (Предоплата / Оплата100)
+  if ((currentMain === 'status1' || currentMain === 'status3') && contractGenerateMode) {
+    if (!document.getElementById('cg-contractor').value) { alert('Выберите подрядчика для договора!'); return; }
+    if (!document.getElementById('cg-signer').value)      { alert('Выберите подписанта для договора!'); return; }
+    if (!document.getElementById('cg-num').value.trim())  { alert('Укажите номер договора!'); return; }
+  }
+
+  // Валидация генерации ДС (Доплата)
+  var dsGenerateChecked = currentMain === 'status2' && document.getElementById('ds-need-checkbox').checked;
+  if (dsGenerateChecked) {
+    if (!document.getElementById('dg-contractor').value) { alert('Выберите подрядчика для ДС!'); return; }
+    if (!document.getElementById('dg-signer').value)      { alert('Выберите подписанта для ДС!'); return; }
+    if (!document.getElementById('dg-num').value.trim())  { alert('Укажите номер ДС!'); return; }
+  }
+
   var btn = document.getElementById('submit-new');
   btn.disabled    = true;
   btn.textContent = '⏳ Отправка...';
 
   try {
     var смета   = await readFile('i-смета');
-    var договор = await readFile('i-договор');
+    var договор = contractGenerateMode ? { data: null, name: '' } : await readFile('i-договор');
     var счет    = await readFile('i-счет');
-    var дс      = await readFile('i-дс');
+    var дс      = dsGenerateChecked ? { data: null, name: '' } : await readFile('i-дс');
     var кс2     = await readFile('i-кс2');
     var кс3     = await readFile('i-кс3');
     var упд     = await readFile('i-упд');
@@ -691,15 +936,56 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       отчетData:   отчет.data,   отчетName:   отчет.name
     };
 
+    if ((currentMain === 'status1' || currentMain === 'status3') && contractGenerateMode) {
+      payload.contractGenerate  = true;
+      payload.contractWorkType  = cgWorkType;
+      payload.contractNds       = cgNds;
+      payload.contractNdsRate   = document.getElementById('cg-nds-rate').value;
+      payload.contractorKey     = document.getElementById('cg-contractor').value;
+      payload.signerKey         = document.getElementById('cg-signer').value;
+      payload.contractWorkKind  = document.getElementById('cg-work-kind').value;
+      payload.contractDocNum    = document.getElementById('cg-num').value.trim();
+      payload.contractDocDate   = document.getElementById('cg-date').value.trim();
+      payload.contractAddr      = document.getElementById('cg-addr').value.trim();
+      payload.contractStart     = document.getElementById('cg-start').value.trim();
+      payload.contractEnd       = document.getElementById('cg-end').value.trim();
+      payload.contractPrice     = document.getElementById('cg-price').value.trim();
+      payload.contractAdv       = document.getElementById('cg-adv').value.trim();
+    }
+
+    if (dsGenerateChecked) {
+      payload.dsGenerate        = true;
+      payload.dsGenWork         = dgWork;
+      payload.dsGenType         = document.getElementById('dg-type').value;
+      payload.dsGenNds          = dgNds;
+      payload.dsGenNdsRate      = document.getElementById('dg-nds-rate').value;
+      payload.dsGenContractorKey = document.getElementById('dg-contractor').value;
+      payload.dsGenSignerKey    = document.getElementById('dg-signer').value;
+      payload.dsGenNum          = document.getElementById('dg-num').value.trim();
+      payload.dsGenDate         = document.getElementById('dg-date').value.trim();
+      payload.dsGenMainNum      = document.getElementById('dg-main-num').value.trim();
+      payload.dsGenMainDate     = document.getElementById('dg-main-date').value.trim();
+      payload.dsGenStart        = document.getElementById('dg-start').value.trim();
+      payload.dsGenEnd          = document.getElementById('dg-end').value.trim();
+      payload.dsGenPrice        = document.getElementById('dg-price').value.trim();
+    }
+
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 
     alert('✅ Заявка отправлена!\n\nПроверьте Telegram — придёт подтверждение с номером заявки.');
     this.reset();
     hideAllFields();
     document.getElementById('form-fields').classList.remove('active');
-    document.getElementById('sub-block').style.display         = 'none';
-    document.getElementById('doplata-block').style.display     = 'none';
-    document.getElementById('linked-order-info').style.display = 'none';
+    document.getElementById('sub-block').style.display          = 'none';
+    document.getElementById('doplata-block').style.display      = 'none';
+    document.getElementById('linked-order-info').style.display  = 'none';
+    document.getElementById('contract-block').style.display     = 'none';
+    document.getElementById('contract-upload-part').style.display = 'block';
+    document.getElementById('contract-generate-part').style.display = 'none';
+    document.getElementById('contract-mode-upload').classList.add('active');
+    document.getElementById('contract-mode-generate').classList.remove('active');
+    contractGenerateMode = false;
+    resetDsGenerateCheckbox();
     document.querySelectorAll('.btn').forEach(function(b) { b.classList.remove('active'); });
     currentMain = ''; currentSub = '';
     showScreen('screen-menu');
@@ -753,20 +1039,17 @@ function renderOrders(orders) {
     var card = document.createElement('div');
     card.className = 'order-card';
 
-    // Тип оплаты
     var paymentLabel = order.paymentType || '—';
     if (order.paymentType === 'status1' || order.paymentType === 'предоплата') paymentLabel = 'Предоплата (Аванс)';
     if (order.paymentType === 'status2' || order.paymentType === 'доплата')    paymentLabel = 'Доплата (остаток)';
     if (order.paymentType === 'status3' || order.paymentType === 'оплата100')  paymentLabel = 'Оплата (100%)';
 
-    // Бейдж связанной заявки
     var linkedBadge = '';
     if (order.linkedOrderId) {
       linkedBadge = ' <span style="background:#fff3cd;color:#856404;padding:2px 7px;' +
         'border-radius:4px;font-size:11px;font-weight:bold;">🔗 Доплата к №' + order.linkedOrderId + '</span>';
     }
 
-    // ── БЛОК АВАНС ──
     var avansRows = '';
     if (order.avans && order.avans.length > 0) {
       order.avans.forEach(function(item) {
@@ -782,7 +1065,6 @@ function renderOrders(orders) {
         '</div>';
     }
 
-    // ── БЛОК ЗАКРЫТИЕ ЗАТРАТ ──
     var zakrRows = '';
     if (order.zakr && order.zakr.length > 0) {
       order.zakr.forEach(function(item) {
@@ -798,7 +1080,6 @@ function renderOrders(orders) {
         '</div>';
     }
 
-    // Шапка карточки
     var cardBody =
       '<div class="order-card-body">' +
         '<div class="order-id">ID: ' + order.id + ' | ' + (order.date || '') + (linkedBadge ? ' ' + linkedBadge : '') + '</div>' +
@@ -810,7 +1091,6 @@ function renderOrders(orders) {
         '</div>' +
       '</div>';
 
-    // Кнопки
     var footer =
       '<div class="order-card-footer">' +
         (order.folderUrl
@@ -834,7 +1114,6 @@ function renderOrders(orders) {
     list.appendChild(card);
   });
 
-  // Обработчики кнопок исправленных
   list.querySelectorAll('button[data-id]').forEach(function(b) {
     b.addEventListener('click', function() {
       openFixScreen(
@@ -936,7 +1215,7 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
   }
 });
 
-// ===== ФОРМИРОВАНИЕ ДОКУМЕНТОВ: НАВИГАЦИЯ =====
+// ===== ФОРМИРОВАНИЕ ДОКУМЕНТОВ (отдельные экраны): НАВИГАЦИЯ =====
 document.getElementById('btn-go-docs').addEventListener('click', function() {
   showScreen('screen-docs-menu');
 });
@@ -958,7 +1237,7 @@ document.getElementById('back-from-ds').addEventListener('click', function() {
   showScreen('screen-docs-menu');
 });
 
-// ===== ЗАГРУЗКА СПИСКОВ ПОДРЯДЧИКОВ / ПОДПИСАНТОВ =====
+// ===== ЗАГРУЗКА СПИСКОВ ПОДРЯДЧИКОВ / ПОДПИСАНТОВ (общий кэш для всех форм) =====
 var docMetaCache = null;
 async function loadDocMeta(contractorSelectId, signerSelectId) {
   var contractorSelect = document.getElementById(contractorSelectId);
@@ -1009,7 +1288,7 @@ function fillDocSelects(contractorSelect, signerSelect) {
   });
 }
 
-// ===== ФОРМА ДОГОВОРА: ПЕРЕКЛЮЧАТЕЛИ =====
+// ===== ОТДЕЛЬНЫЙ ЭКРАН ДОГОВОРА: ПЕРЕКЛЮЧАТЕЛИ =====
 var contractWorkType = 'Иждивение';
 var contractNds      = 'С НДС';
 
@@ -1036,7 +1315,7 @@ document.getElementById('c-btn-nonds').addEventListener('click', function() {
   document.getElementById('c-nds-rate-group').style.display = 'none';
 });
 
-// ===== ОТПРАВКА ДОГОВОРА =====
+// ===== ОТПРАВКА ДОГОВОРА (отдельный экран) =====
 document.getElementById('btn-gen-contract').addEventListener('click', async function() {
   var contractorKey = document.getElementById('c-contractor').value;
   var signerKey      = document.getElementById('c-signer').value;
@@ -1091,7 +1370,7 @@ document.getElementById('btn-gen-contract').addEventListener('click', async func
   }
 });
 
-// ===== ФОРМА ДС: ПЕРЕКЛЮЧАТЕЛИ =====
+// ===== ОТДЕЛЬНЫЙ ЭКРАН ДС: ПЕРЕКЛЮЧАТЕЛИ =====
 var dsWork = 'Иждивение';
 var dsNds  = 'С НДС';
 
@@ -1120,7 +1399,6 @@ document.getElementById('ds-btn-nonds').addEventListener('click', function() {
   document.getElementById('ds-nds-rate-group').style.display = 'none';
 });
 
-// ===== ФОРМА ДС: ПЕРЕКЛЮЧЕНИЕ ПОЛЕЙ ПО ТИПУ =====
 document.getElementById('ds-type').addEventListener('change', function() {
   var dsType = this.value;
   var showDates = dsType !== 'Только сумма';
@@ -1133,7 +1411,7 @@ document.getElementById('ds-type').addEventListener('change', function() {
     (showPrice && dsNds === 'С НДС') ? 'block' : 'none';
 });
 
-// ===== ОТПРАВКА ДС =====
+// ===== ОТПРАВКА ДС (отдельный экран) =====
 document.getElementById('btn-gen-ds').addEventListener('click', async function() {
   var contractorKey = document.getElementById('ds-contractor').value;
   var signerKey      = document.getElementById('ds-signer').value;
