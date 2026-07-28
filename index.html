@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -103,6 +104,8 @@
     .badge-blue   { background: #cce5ff; color: #004085; }
     .badge-red    { background: #f8d7da; color: #721c24; }
     .badge-gray   { background: #e2e3e5; color: #383d41; }
+    .badge-purple { background: #e2d9f3; color: #4b2e83; }
+    .badge-orange { background: #ffe5d0; color: #8a4b08; }
     .badge-plain  { font-size: 13px; color: #333; }
 
     /* КНОПКИ КАРТОЧКИ */
@@ -267,7 +270,7 @@ try {
   }
 } catch(e) {}
 
-let tgId = '';
+let tgId = 'TEST_USER';
 let tgUsername = '';
 try {
   if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
@@ -351,7 +354,6 @@ async function loadDoplataOrders() {
     var result  = await resp.json();
     cachedOrders = result.orders || [];
 
-    // Фильтруем только предоплаты (не закрытые)
     var predoplaty = cachedOrders.filter(function(o) {
       return (o.paymentType === 'предоплата' || o.paymentType === 'status1');
     });
@@ -366,7 +368,7 @@ async function loadDoplataOrders() {
     });
 
   } catch(err) {
-    select.innerHTML = '<option value="__none__">— Не связанная заявка —</option>';
+    select.innerHTML = '<option value="none">— Не связанная заявка —</option>';
   }
 }
 
@@ -377,7 +379,7 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   var details    = document.getElementById('linked-order-details');
   var link       = document.getElementById('linked-order-link');
 
-  if (!selectedId || selectedId === '__none__') {
+  if (!selectedId || selectedId === 'none') {
     infoBlock.style.display = 'none';
     document.getElementById('contractor').value = '';
     document.getElementById('branch').value     = '';
@@ -454,17 +456,41 @@ function readFile(inputId) {
 function getStatusBadge(value) {
   if (!value) return '<span class="badge-plain">—</span>';
   var v = value.toString().toLowerCase().trim();
-  if (v === 'оплачено')               return '<span class="badge badge-green">'  + value + '</span>';
-  if (v === 'в очереди на оплату')    return '<span class="badge badge-blue">'   + value + '</span>';
-  if (v === 'на согласовании')        return '<span class="badge badge-yellow">' + value + '</span>';
-  if (v === 'ждем счет')              return '<span class="badge badge-gray">'   + value + '</span>';
-  if (v === 'отказ')                  return '<span class="badge badge-red">'    + value + '</span>';
-  if (v === 'да' || v === 'есть' || v === 'подписан' || v === 'готово')
-                                      return '<span class="badge badge-green">'  + value + '</span>';
-  if (v === 'нет' || v === 'отсутствует')
-                                      return '<span class="badge badge-red">'    + value + '</span>';
-  if (v === 'в работе' || v === 'в процессе')
-                                      return '<span class="badge badge-blue">'   + value + '</span>';
+
+  // Зелёный — положительные / завершённые
+  if (v === 'оплачено')  return '<span class="badge badge-green">' + value + '</span>';
+  if (v === 'закрыты')   return '<span class="badge badge-green">' + value + '</span>';
+  if (v === 'получено')  return '<span class="badge badge-green">' + value + '</span>';
+  if (v === 'да' || v === 'есть' || v === 'подписан' || v === 'готово' || v === 'норм')
+    return '<span class="badge badge-green">' + value + '</span>';
+
+  // Синий — в процессе / ожидание
+  if (v === 'в очереди на оплату') return '<span class="badge badge-blue">' + value + '</span>';
+  if (v === 'в работе' || v === 'в процессе') return '<span class="badge badge-blue">' + value + '</span>';
+  if (v === 'ждем трек номер') return '<span class="badge badge-blue">' + value + '</span>';
+  if (v === 'азат проверил') return '<span class="badge badge-blue">' + value + '</span>';
+  if (v === 'ожидание отчета') return '<span class="badge badge-blue">' + value + '</span>';
+
+  // Жёлтый — требует внимания / согласования
+  if (v === 'на согласовании') return '<span class="badge badge-yellow">' + value + '</span>';
+  if (v === 'на исправлении') return '<span class="badge badge-yellow">' + value + '</span>';
+  if (v === 'в закреплении') return '<span class="badge badge-yellow">' + value + '</span>';
+  if (v === 'ожид ориг') return '<span class="badge badge-yellow">' + value + '</span>';
+
+  // Фиолетовый — ожидание оригинала/выгрузки
+  if (v === 'ожидание оригинала/выгрузки' || v === 'ожидаем оригинал/выгрузки')
+    return '<span class="badge badge-purple">' + value + '</span>';
+
+  // Оранжевый — бинарное "нет"
+  if (v === 'нет' || v === 'отсутствует') return '<span class="badge badge-orange">' + value + '</span>';
+
+  // Красный — проблемные статусы
+  if (v === 'ждем счет') return '<span class="badge badge-red">' + value + '</span>';
+  if (v === 'отказ') return '<span class="badge badge-red">' + value + '</span>';
+  if (v === 'нет документа' || v === 'нет договора') return '<span class="badge badge-red">' + value + '</span>';
+  if (v === 'отличие суммы' || v === 'неверные реквизиты') return '<span class="badge badge-red">' + value + '</span>';
+  if (v === 'закрыты без док') return '<span class="badge badge-red">' + value + '</span>';
+
   return '<span class="badge-plain">' + value + '</span>';
 }
 
