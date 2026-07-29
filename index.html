@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Заявки</title>
-  <script src="https://script.google.com/macros/s/AKfycbwyu12Esfnkq_CKmUtCp8jOD9VwZaNwpzCpvH3ZqJzqsyr914YdIOlgBpwZywd_gYLliQ/exec?data=%7B%22mode%22%3A%22tgScript%22%7D"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: Arial, sans-serif; padding: 15px; background: #f0f4f8; color: #333; }
@@ -251,11 +251,11 @@
       </div>
 
       <div class="form-group"><label>№ Доп. соглашения</label><input type="text" id="dg-num"></div>
-      <div class="form-group"><label>Дата ДС</label><input type="date" id="dg-date"></div>
+      <div class="form-group"><label>Дата ДС (ДД.ММ.ГГГГ)</label><input type="text" id="dg-date" placeholder="1.06.2026"></div>
       <div class="form-group"><label>№ Основного договора</label><input type="text" id="dg-main-num"></div>
-      <div class="form-group"><label>Дата Основного договора</label><input type="date" id="dg-main-date"></div>
-      <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="date" id="dg-start"></div>
-      <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="date" id="dg-end"></div>
+      <div class="form-group"><label>Дата Основного договора</label><input type="text" id="dg-main-date" placeholder="1.06.2026"></div>
+      <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="text" id="dg-start" placeholder="1.06.2026"></div>
+      <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="text" id="dg-end" placeholder="1.06.2026"></div>
       <div class="form-group" id="dg-price-group"><label>Итоговая сумма по ДС</label><input type="text" id="dg-price" placeholder="100 000"></div>
     </div>
   </div>
@@ -320,10 +320,10 @@
         <select id="cg-signer"><option value="">⏳ Загрузка...</option></select>
       </div>
       <div class="form-group"><label>№ договора</label><input type="text" id="cg-num"></div>
-      <div class="form-group"><label>Дата договора</label><input type="date" id="cg-date"></div>
+      <div class="form-group"><label>Дата (ДД.ММ.ГГГГ)</label><input type="text" id="cg-date" placeholder="1.06.2026"></div>
       <div class="form-group"><label>Адрес объекта</label><input type="text" id="cg-addr"></div>
-      <div class="form-group"><label>Начало работ</label><input type="date" id="cg-start"></div>
-      <div class="form-group"><label>Конец работ</label><input type="date" id="cg-end"></div>
+      <div class="form-group"><label>Начало (ДД.ММ.ГГГГ)</label><input type="text" id="cg-start" placeholder="1.06.2026"></div>
+      <div class="form-group"><label>Конец (ДД.ММ.ГГГГ)</label><input type="text" id="cg-end" placeholder="1.06.2026"></div>
       <div class="form-group"><label>Сумма ИТОГО</label><input type="text" id="cg-price" placeholder="100 000"></div>
       <div class="form-group"><label>Аванс %</label><input type="text" id="cg-adv" value="30"></div>
     </div>
@@ -370,7 +370,6 @@ let tg = null;
 try {
   if (window.Telegram && window.Telegram.WebApp) {
     tg = window.Telegram.WebApp;
-    tg.ready();
     tg.expand();
   }
 } catch(e) {}
@@ -385,6 +384,18 @@ try {
 } catch(e) {}
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyu12Esfnkq_CKmUtCp8jOD9VwZaNwpzCpvH3ZqJzqsyr914YdIOlgBpwZywd_gYLliQ/exec';
+
+// Безопасный alert — стандартный браузерный showAlert() иногда "подвешивает"
+// ввод в Telegram Mini App после закрытия; showAlert от Telegram лишён этой проблемы
+function showAlert(msg) {
+  try {
+    if (tg && typeof tg.showAlert === 'function') {
+      tg.showAlert(msg);
+      return;
+    }
+  } catch(e) {}
+  alert(msg);
+}
 
 let currentMain       = '';
 let currentSub        = ''; // 'иждивение' / 'давальческое' — единый вариант исполнения на всю форму
@@ -473,8 +484,7 @@ function selectWorkVariant(variant) {
   currentSub = variant;
   document.querySelectorAll('#work-variant-buttons .btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById(variant === 'иждивение' ? 'btn-work-izh' : 'btn-work-dav').classList.add('active');
-  var showM15 = variant === 'давальческое' && currentMain !== 'status1';
-  document.getElementById('m15-group').style.display = showM15 ? 'block' : 'none';
+  document.getElementById('m15-group').style.display = variant === 'давальческое' ? 'block' : 'none';
 }
 
 // ===== ЗАГРУЗКА ЗАЯВОК ДЛЯ ДОПЛАТЫ =====
@@ -582,7 +592,7 @@ document.getElementById('ds-need-checkbox').addEventListener('change', async fun
         document.getElementById('dg-signer').value = currentLinkedContractMeta.signerKey;
       }
       if (currentLinkedContractMeta.docNum)  document.getElementById('dg-main-num').value  = currentLinkedContractMeta.docNum;
-      if (currentLinkedContractMeta.docDate) document.getElementById('dg-main-date').value = ruDateToIso(currentLinkedContractMeta.docDate);
+      if (currentLinkedContractMeta.docDate) document.getElementById('dg-main-date').value = currentLinkedContractMeta.docDate;
 
       if (currentLinkedContractMeta.nds === 'Без НДС') {
         document.getElementById('dg-btn-nonds').click();
@@ -665,23 +675,16 @@ document.getElementById('cg-btn-nonds').addEventListener('click', function() {
   document.getElementById('cg-nds-rate-group').style.display = 'none';
 });
 
-// ===== КОНВЕРТАЦИЯ ДАТ: ISO (из <input type="date">) ↔ РУССКИЙ ФОРМАТ (для документов) =====
-function formatDateRu(isoDate) {
-  if (!isoDate) return '';
-  var parts = isoDate.split('-'); // yyyy-mm-dd
-  if (parts.length !== 3) return isoDate;
-  var d = parseInt(parts[2], 10);
-  return d + '.' + parts[1] + '.' + parts[0];
-}
-
-function ruDateToIso(ruStr) {
-  if (!ruStr) return '';
-  var parts = ruStr.trim().split('.');
-  if (parts.length !== 3) return '';
-  var d = parts[0].padStart(2, '0');
-  var m = parts[1].padStart(2, '0');
-  var y = parts[2];
-  return y + '-' + m + '-' + d;
+// ===== ПАРСИНГ ДАТЫ ДД.ММ.ГГГГ ДЛЯ СРАВНЕНИЯ =====
+function parseRuDate(str) {
+  if (!str) return null;
+  var parts = str.trim().split('.');
+  if (parts.length !== 3) return null;
+  var d = parseInt(parts[0], 10), m = parseInt(parts[1], 10), y = parseInt(parts[2], 10);
+  if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
+  var dt = new Date(y, m - 1, d);
+  if (isNaN(dt.getTime())) return null;
+  return dt;
 }
 
 // ===== ДЕНЕЖНЫЙ ФОРМАТ ПОЛЕЙ СУММЫ =====
@@ -777,15 +780,15 @@ function makeRow(label, value) {
 document.getElementById('megaForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
-  if (!currentMain) { alert('Выберите тип оплаты!'); return; }
-  if (!currentSub)  { alert('Выберите вариант исполнения!'); return; }
+  if (!currentMain) { showAlert('Выберите тип оплаты!'); return; }
+  if (!currentSub)  { showAlert('Выберите вариант исполнения!'); return; }
 
   var linkedOrderId   = '';
   var linkedFolderUrl = '';
 
   if (currentMain === 'status2') {
     var selectVal = document.getElementById('doplata-order-select').value;
-    if (!selectVal) { alert('Выберите заявку или "Не связанная заявка"!'); return; }
+    if (!selectVal) { showAlert('Выберите заявку или "Не связанная заявка"!'); return; }
 
     if (selectVal !== '__none__') {
       linkedOrderId = selectVal;
@@ -795,28 +798,28 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
   }
 
   if ((currentMain === 'status1' || currentMain === 'status3') && contractGenerateMode) {
-    if (!document.getElementById('cg-contractor').value) { alert('Выберите подрядчика для договора!'); return; }
-    if (!document.getElementById('cg-signer').value)      { alert('Выберите подписанта для договора!'); return; }
-    if (!document.getElementById('cg-num').value.trim())  { alert('Укажите номер договора!'); return; }
+    if (!document.getElementById('cg-contractor').value) { showAlert('Выберите подрядчика для договора!'); return; }
+    if (!document.getElementById('cg-signer').value)      { showAlert('Выберите подписанта для договора!'); return; }
+    if (!document.getElementById('cg-num').value.trim())  { showAlert('Укажите номер договора!'); return; }
 
-    var cgDocDateVal   = document.getElementById('cg-date').value;
-    var cgStartDateVal = document.getElementById('cg-start').value;
-    if (cgDocDateVal && cgStartDateVal && cgDocDateVal > cgStartDateVal) {
-      alert('Дата договора не может быть позже даты начала работ!');
+    var cgDocDate   = parseRuDate(document.getElementById('cg-date').value.trim());
+    var cgStartDate = parseRuDate(document.getElementById('cg-start').value.trim());
+    if (cgDocDate && cgStartDate && cgDocDate > cgStartDate) {
+      showAlert('Дата договора не может быть позже даты начала работ!');
       return;
     }
   }
 
   var dsGenerateChecked = currentMain === 'status2' && document.getElementById('ds-need-checkbox').checked;
   if (dsGenerateChecked) {
-    if (!document.getElementById('dg-contractor').value) { alert('Выберите подрядчика для ДС!'); return; }
-    if (!document.getElementById('dg-signer').value)      { alert('Выберите подписанта для ДС!'); return; }
-    if (!document.getElementById('dg-num').value.trim())  { alert('Укажите номер ДС!'); return; }
+    if (!document.getElementById('dg-contractor').value) { showAlert('Выберите подрядчика для ДС!'); return; }
+    if (!document.getElementById('dg-signer').value)      { showAlert('Выберите подписанта для ДС!'); return; }
+    if (!document.getElementById('dg-num').value.trim())  { showAlert('Укажите номер ДС!'); return; }
 
-    var dgDsDateVal    = document.getElementById('dg-date').value;
-    var dgStartDateVal = document.getElementById('dg-start').value;
-    if (dgDsDateVal && dgStartDateVal && dgDsDateVal > dgStartDateVal) {
-      alert('Дата ДС не может быть позже даты начала ремонта!');
+    var dgDsDate    = parseRuDate(document.getElementById('dg-date').value.trim());
+    var dgStartDate = parseRuDate(document.getElementById('dg-start').value.trim());
+    if (dgDsDate && dgStartDate && dgDsDate > dgStartDate) {
+      showAlert('Дата ДС не может быть позже даты начала ремонта!');
       return;
     }
   }
@@ -852,10 +855,10 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       payload.signerKey         = document.getElementById('cg-signer').value;
       payload.contractWorkKind  = document.getElementById('cg-work-kind').value;
       payload.contractDocNum    = document.getElementById('cg-num').value.trim();
-      payload.contractDocDate   = formatDateRu(document.getElementById('cg-date').value);
+      payload.contractDocDate   = document.getElementById('cg-date').value.trim();
       payload.contractAddr      = document.getElementById('cg-addr').value.trim();
-      payload.contractStart     = formatDateRu(document.getElementById('cg-start').value);
-      payload.contractEnd       = formatDateRu(document.getElementById('cg-end').value);
+      payload.contractStart     = document.getElementById('cg-start').value.trim();
+      payload.contractEnd       = document.getElementById('cg-end').value.trim();
       payload.contractPrice     = document.getElementById('cg-price').value.trim();
       payload.contractAdv       = document.getElementById('cg-adv').value.trim();
     }
@@ -869,17 +872,17 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       payload.dsGenContractorKey = document.getElementById('dg-contractor').value;
       payload.dsGenSignerKey     = document.getElementById('dg-signer').value;
       payload.dsGenNum           = document.getElementById('dg-num').value.trim();
-      payload.dsGenDate          = formatDateRu(document.getElementById('dg-date').value);
+      payload.dsGenDate          = document.getElementById('dg-date').value.trim();
       payload.dsGenMainNum       = document.getElementById('dg-main-num').value.trim();
-      payload.dsGenMainDate      = formatDateRu(document.getElementById('dg-main-date').value);
-      payload.dsGenStart         = formatDateRu(document.getElementById('dg-start').value);
-      payload.dsGenEnd           = formatDateRu(document.getElementById('dg-end').value);
+      payload.dsGenMainDate      = document.getElementById('dg-main-date').value.trim();
+      payload.dsGenStart         = document.getElementById('dg-start').value.trim();
+      payload.dsGenEnd           = document.getElementById('dg-end').value.trim();
       payload.dsGenPrice         = document.getElementById('dg-price').value.trim();
     }
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 
-    alert('✅ Заявка отправлена!\n\nПроверьте Telegram — придёт подтверждение с номером заявки.');
+    showAlert('✅ Заявка отправлена!\n\nПроверьте Telegram — придёт подтверждение с номером заявки.');
     this.reset();
     document.getElementById('form-fields').classList.remove('active');
     document.getElementById('doplata-block').style.display      = 'none';
@@ -898,7 +901,7 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     showScreen('screen-menu');
 
   } catch(err) {
-    alert('❌ Ошибка отправки: ' + err.message);
+    showAlert('❌ Ошибка отправки: ' + err.message);
   } finally {
     btn.disabled    = false;
     btn.textContent = '📤 Отправить заявку';
@@ -1071,13 +1074,13 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 
-    alert('✅ Исправленные документы загружены!\n\nПроверьте Telegram.');
+    showAlert('✅ Исправленные документы загружены!\n\nПроверьте Telegram.');
     this.reset();
     showScreen('screen-orders');
     loadOrders();
 
   } catch(err) {
-    alert('❌ Ошибка: ' + err.message);
+    showAlert('❌ Ошибка: ' + err.message);
   } finally {
     btn.disabled    = false;
     btn.textContent = '📤 Загрузить исправленные';
