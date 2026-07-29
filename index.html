@@ -356,8 +356,8 @@
   <form id="fixForm">
     <div class="form-box active">
       <div class="form-group">
-        <label>📎 Файл</label>
-        <input type="file" id="fi-file">
+        <label>📎 Файлы (можно выбрать сразу несколько)</label>
+        <input type="file" id="fi-files" multiple>
       </div>
       <button type="submit" class="submit-btn">📤 Загрузить исправленные</button>
     </div>
@@ -1011,15 +1011,14 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
   btn.textContent = '⏳ Загрузка...';
 
   try {
-    var file = await readFile('fi-file');
+    var massFiles = await readMassFiles('fi-files');
 
     var payload = {
       mode: 'fix',
       tg_id: tgId,
       tg_username: tgUsername,
       orderId: currentFixOrderId,
-      fileData: file.data,
-      fileName: file.name
+      massFiles: massFiles
     };
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
