@@ -162,6 +162,9 @@
     .checkbox-row label { margin-bottom: 0; }
 
     .meta-hint { font-size: 11px; color: #2481cc; margin-bottom: 10px; }
+
+    .gm-block { padding: 10px 14px; border-top: 1px solid #f0f0f0; }
+    .gm-block input[type="text"] { margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -1020,21 +1023,63 @@ function renderOrders(orders) {
         (order.fixFolderUrl
           ? '<a class="link-btn green" href="' + order.fixFolderUrl + '" target="_blank">✅ Исправленные</a>'
           : '') +
-        '<button class="link-btn orange"' +
+        '<button class="link-btn orange fix-btn"' +
           ' data-id="'      + order.id                  + '"' +
           ' data-payment="' + (order.paymentType || '') + '"' +
           ' data-m15="'     + (order.m15 || '')         + '">' +
           (order.fixFolderUrl ? '🔄 Загрузить снова' : '⚠️ Исправленные') +
         '</button>' +
+        '<button class="link-btn gray gm-toggle-btn" data-id="' + order.id + '">' +
+          '📝 ГМ' + (order.gm ? ' ✓' : '') +
+        '</button>' +
       '</div>';
 
-    card.innerHTML = cardBody + avansBlock + zakrBlock + footer;
+    var gmValueEscaped = (order.gm || '').replace(/"/g, '&quot;');
+    var gmBlock =
+      '<div class="gm-block" id="gm-block-' + order.id + '" style="display:none;">' +
+        '<input type="text" class="gm-input" data-id="' + order.id + '" value="' + gmValueEscaped + '" placeholder="Введите текст ГМ">' +
+        '<button class="submit-btn gm-save-btn" data-id="' + order.id + '">Сохранить</button>' +
+      '</div>';
+
+    card.innerHTML = cardBody + avansBlock + zakrBlock + footer + gmBlock;
     list.appendChild(card);
   });
 
-  list.querySelectorAll('button[data-id]').forEach(function(b) {
+  list.querySelectorAll('.fix-btn').forEach(function(b) {
     b.addEventListener('click', function() {
       openFixScreen(this.getAttribute('data-id'));
+    });
+  });
+
+  list.querySelectorAll('.gm-toggle-btn').forEach(function(b) {
+    b.addEventListener('click', function() {
+      var id = this.getAttribute('data-id');
+      var block = document.getElementById('gm-block-' + id);
+      block.style.display = (block.style.display === 'none') ? 'block' : 'none';
+    });
+  });
+
+  list.querySelectorAll('.gm-save-btn').forEach(function(b) {
+    b.addEventListener('click', async function() {
+      var id = this.getAttribute('data-id');
+      var input = list.querySelector('.gm-input[data-id="' + id + '"]');
+      var text = input.value.trim();
+      var origText = this.textContent;
+      this.disabled = true;
+      this.textContent = 'Сохранение...';
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify({ mode: 'setGM', orderId: id, gmText: text })
+        });
+        showAlert('✅ Сохранено!');
+      } catch(err) {
+        showAlert('❌ Ошибка: ' + err.message);
+      } finally {
+        this.disabled = false;
+        this.textContent = origText;
+      }
     });
   });
 }
