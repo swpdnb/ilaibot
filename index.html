@@ -370,6 +370,7 @@ let tg = null;
 try {
   if (window.Telegram && window.Telegram.WebApp) {
     tg = window.Telegram.WebApp;
+    tg.ready();
     tg.expand();
   }
 } catch(e) {}
