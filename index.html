@@ -256,7 +256,7 @@
       <div class="form-group"><label>Дата Основного договора</label><input type="text" id="dg-main-date" placeholder="1.06.2026"></div>
       <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="text" id="dg-start" placeholder="1.06.2026"></div>
       <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="text" id="dg-end" placeholder="1.06.2026"></div>
-      <div class="form-group" id="dg-price-group"><label>Итоговая сумма по ДС</label><input type="text" id="dg-price" placeholder="100000"></div>
+      <div class="form-group" id="dg-price-group"><label>Итоговая сумма по ДС</label><input type="text" id="dg-price" placeholder="100 000"></div>
     </div>
   </div>
 
@@ -324,7 +324,7 @@
       <div class="form-group"><label>Адрес объекта</label><input type="text" id="cg-addr"></div>
       <div class="form-group"><label>Начало (ДД.ММ.ГГГГ)</label><input type="text" id="cg-start" placeholder="1.06.2026"></div>
       <div class="form-group"><label>Конец (ДД.ММ.ГГГГ)</label><input type="text" id="cg-end" placeholder="1.06.2026"></div>
-      <div class="form-group"><label>Сумма ИТОГО</label><input type="text" id="cg-price" placeholder="100000"></div>
+      <div class="form-group"><label>Сумма ИТОГО</label><input type="text" id="cg-price" placeholder="100 000"></div>
       <div class="form-group"><label>Аванс %</label><input type="text" id="cg-adv" value="30"></div>
     </div>
   </div>
@@ -663,6 +663,31 @@ document.getElementById('cg-btn-nonds').addEventListener('click', function() {
   document.getElementById('cg-nds-rate-group').style.display = 'none';
 });
 
+// ===== ПАРСИНГ ДАТЫ ДД.ММ.ГГГГ ДЛЯ СРАВНЕНИЯ =====
+function parseRuDate(str) {
+  if (!str) return null;
+  var parts = str.trim().split('.');
+  if (parts.length !== 3) return null;
+  var d = parseInt(parts[0], 10), m = parseInt(parts[1], 10), y = parseInt(parts[2], 10);
+  if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
+  var dt = new Date(y, m - 1, d);
+  if (isNaN(dt.getTime())) return null;
+  return dt;
+}
+
+// ===== ДЕНЕЖНЫЙ ФОРМАТ ПОЛЕЙ СУММЫ =====
+function attachMoneyFormatting(inputId) {
+  var el = document.getElementById(inputId);
+  if (!el) return;
+  el.addEventListener('input', function() {
+    var raw = this.value.replace(/\s/g, '').replace(/[^\d]/g, '');
+    if (!raw) { this.value = ''; return; }
+    this.value = raw.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  });
+}
+attachMoneyFormatting('cg-price');
+attachMoneyFormatting('dg-price');
+
 // ===== ФАЙЛ → BASE64 =====
 function readFile(inputId) {
   return new Promise(function(resolve) {
@@ -764,6 +789,13 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     if (!document.getElementById('cg-contractor').value) { alert('Выберите подрядчика для договора!'); return; }
     if (!document.getElementById('cg-signer').value)      { alert('Выберите подписанта для договора!'); return; }
     if (!document.getElementById('cg-num').value.trim())  { alert('Укажите номер договора!'); return; }
+
+    var cgDocDate   = parseRuDate(document.getElementById('cg-date').value.trim());
+    var cgStartDate = parseRuDate(document.getElementById('cg-start').value.trim());
+    if (cgDocDate && cgStartDate && cgDocDate > cgStartDate) {
+      alert('Дата договора не может быть позже даты начала работ!');
+      return;
+    }
   }
 
   var dsGenerateChecked = currentMain === 'status2' && document.getElementById('ds-need-checkbox').checked;
@@ -771,6 +803,13 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     if (!document.getElementById('dg-contractor').value) { alert('Выберите подрядчика для ДС!'); return; }
     if (!document.getElementById('dg-signer').value)      { alert('Выберите подписанта для ДС!'); return; }
     if (!document.getElementById('dg-num').value.trim())  { alert('Укажите номер ДС!'); return; }
+
+    var dgDsDate    = parseRuDate(document.getElementById('dg-date').value.trim());
+    var dgStartDate = parseRuDate(document.getElementById('dg-start').value.trim());
+    if (dgDsDate && dgStartDate && dgDsDate > dgStartDate) {
+      alert('Дата ДС не может быть позже даты начала ремонта!');
+      return;
+    }
   }
 
   var btn = document.getElementById('submit-new');
