@@ -367,15 +367,6 @@
 <script>
 // ===== TELEGRAM =====
 let tg = null;
-let scriptLoadStatus = 'не проверялось';
-try {
-  var tgScript = document.querySelector('script[src*="telegram-web-app"]');
-  if (tgScript) {
-    tgScript.addEventListener('load',  function() { scriptLoadStatus = 'загрузился успешно'; });
-    tgScript.addEventListener('error', function() { scriptLoadStatus = 'ОШИБКА ЗАГРУЗКИ (заблокирован/недоступен)'; });
-  }
-} catch(e) {}
-
 try {
   if (window.Telegram && window.Telegram.WebApp) {
     tg = window.Telegram.WebApp;
@@ -391,31 +382,6 @@ try {
     tgId       = tg.initDataUnsafe.user.id.toString();
     tgUsername = tg.initDataUnsafe.user.username || '';
   }
-} catch(e) {}
-
-// ВРЕМЕННАЯ ДИАГНОСТИКА — покажет точно, что реально передал Telegram.
-// Убрать после того, как разберёмся с проблемой TEST_USER.
-try {
-  window.addEventListener('load', function() {
-    setTimeout(async function() {
-      var windowTelegramExists = (typeof window.Telegram !== 'undefined');
-      var fetchResult = 'не проверялось';
-      try {
-        var resp = await fetch('https://telegram.org/js/telegram-web-app.js', { cache: 'no-store' });
-        fetchResult = 'HTTP статус: ' + resp.status + ', размер ответа: ' + (await resp.text()).length + ' байт';
-      } catch(fetchErr) {
-        fetchResult = 'ОШИБКА FETCH: ' + fetchErr.message;
-      }
-
-      alert(
-        'ДИАГНОСТИКА v3:\n' +
-        'window.Telegram существует: ' + (windowTelegramExists ? 'да' : 'нет') + '\n' +
-        'window.Telegram.WebApp существует: ' + (tg ? 'да' : 'нет') + '\n\n' +
-        'Прямая проверка загрузки файла:\n' + fetchResult + '\n\n' +
-        'User-Agent:\n' + navigator.userAgent
-      );
-    }, 800);
-  });
 } catch(e) {}
 
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyu12Esfnkq_CKmUtCp8jOD9VwZaNwpzCpvH3ZqJzqsyr914YdIOlgBpwZywd_gYLliQ/exec';
