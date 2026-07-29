@@ -397,16 +397,22 @@ try {
 // Убрать после того, как разберёмся с проблемой TEST_USER.
 try {
   window.addEventListener('load', function() {
-    setTimeout(function() {
+    setTimeout(async function() {
       var windowTelegramExists = (typeof window.Telegram !== 'undefined');
+      var fetchResult = 'не проверялось';
+      try {
+        var resp = await fetch('https://telegram.org/js/telegram-web-app.js', { cache: 'no-store' });
+        fetchResult = 'HTTP статус: ' + resp.status + ', размер ответа: ' + (await resp.text()).length + ' байт';
+      } catch(fetchErr) {
+        fetchResult = 'ОШИБКА FETCH: ' + fetchErr.message;
+      }
+
       alert(
-        'ДИАГНОСТИКА v2:\n' +
+        'ДИАГНОСТИКА v3:\n' +
         'window.Telegram существует: ' + (windowTelegramExists ? 'да' : 'нет') + '\n' +
-        'window.Telegram.WebApp существует: ' + (tg ? 'да' : 'нет') + '\n' +
-        'Статус загрузки скрипта: ' + scriptLoadStatus + '\n' +
-        'User-Agent:\n' + navigator.userAgent + '\n\n' +
-        'platform: ' + (tg ? tg.platform : '—') + '\n' +
-        'version: ' + (tg ? tg.version : '—')
+        'window.Telegram.WebApp существует: ' + (tg ? 'да' : 'нет') + '\n\n' +
+        'Прямая проверка загрузки файла:\n' + fetchResult + '\n\n' +
+        'User-Agent:\n' + navigator.userAgent
       );
     }, 800);
   });
