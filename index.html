@@ -384,6 +384,23 @@ try {
   }
 } catch(e) {}
 
+// ВРЕМЕННАЯ ДИАГНОСТИКА — покажет точно, что реально передал Telegram.
+// Убрать после того, как разберёмся с проблемой TEST_USER.
+try {
+  window.addEventListener('load', function() {
+    setTimeout(function() {
+      alert(
+        'ДИАГНОСТИКА:\n' +
+        'tg существует: ' + (tg ? 'да' : 'нет') + '\n' +
+        'platform: ' + (tg ? tg.platform : '—') + '\n' +
+        'version: ' + (tg ? tg.version : '—') + '\n' +
+        'initData (сырое): ' + (tg ? tg.initData : '—') + '\n' +
+        'initDataUnsafe: ' + (tg ? JSON.stringify(tg.initDataUnsafe) : '—')
+      );
+    }, 500);
+  });
+} catch(e) {}
+
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyu12Esfnkq_CKmUtCp8jOD9VwZaNwpzCpvH3ZqJzqsyr914YdIOlgBpwZywd_gYLliQ/exec';
 
 let currentMain       = '';
