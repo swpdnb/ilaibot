@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -136,10 +137,10 @@
 
     .fix-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 10px; border-radius: 6px; margin-bottom: 14px; font-size: 13px; text-align: center; }
 
-    #sub-block      { display: none; margin-bottom: 12px; }
-    #doplata-block  { display: none; margin-bottom: 12px; }
-    #contract-block { display: none; margin-bottom: 12px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-    #ds-generate-block { display: none; margin-top: 10px; padding: 12px; background: #f8f9fb; border-radius: 8px; border: 1px solid #e0e0e0; }
+    #doplata-block      { display: none; margin-bottom: 12px; }
+    #work-variant-block { display: none; margin-bottom: 12px; }
+    #contract-block     { display: none; margin-bottom: 12px; background: #fff; padding: 15px; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    #ds-generate-block  { display: none; margin-top: 10px; padding: 12px; background: #f8f9fb; border-radius: 8px; border: 1px solid #e0e0e0; }
 
     .doplata-order-select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; margin-bottom: 10px; }
 
@@ -160,7 +161,7 @@
     .checkbox-row input[type="checkbox"] { width: auto; }
     .checkbox-row label { margin-bottom: 0; }
 
-    .meta-hint { font-size: 11px; color: #2481cc; margin-top: -8px; margin-bottom: 10px; }
+    .meta-hint { font-size: 11px; color: #2481cc; margin-bottom: 10px; }
   </style>
 </head>
 <body>
@@ -171,7 +172,6 @@
   <div class="menu-wrap">
     <button class="menu-btn primary"   id="btn-go-orders">📂 Мои заявки</button>
     <button class="menu-btn secondary" id="btn-go-new">➕ Новая заявка</button>
-    <button class="menu-btn secondary" id="btn-go-docs">📝 Формирование документов</button>
   </div>
 </div>
 
@@ -218,12 +218,6 @@
         ✅ Данные договора подставлены из предоплаты
       </div>
 
-      <div class="section-title">Вариант</div>
-      <div class="type-buttons" id="dg-work-buttons">
-        <button type="button" class="btn active" id="dg-btn-izh">Иждивение (№2)</button>
-        <button type="button" class="btn" id="dg-btn-dav">Давальческое (№4)</button>
-      </div>
-
       <div class="form-group">
         <label>Что меняется в ДС?</label>
         <select id="dg-type">
@@ -257,20 +251,29 @@
       </div>
 
       <div class="form-group"><label>№ Доп. соглашения</label><input type="text" id="dg-num"></div>
-      <div class="form-group"><label>Дата ДС (ДД.ММ.ГГГГ)</label><input type="text" id="dg-date" placeholder="01.01.2026"></div>
+      <div class="form-group"><label>Дата ДС (ДД.ММ.ГГГГ)</label><input type="text" id="dg-date" placeholder="1.06.2026"></div>
       <div class="form-group"><label>№ Основного договора</label><input type="text" id="dg-main-num"></div>
-      <div class="form-group"><label>Дата Основного договора</label><input type="text" id="dg-main-date" placeholder="01.01.2026"></div>
-      <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="text" id="dg-start" placeholder="01.01.2026"></div>
-      <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="text" id="dg-end" placeholder="01.01.2026"></div>
+      <div class="form-group"><label>Дата Основного договора</label><input type="text" id="dg-main-date" placeholder="1.06.2026"></div>
+      <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="text" id="dg-start" placeholder="1.06.2026"></div>
+      <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="text" id="dg-end" placeholder="1.06.2026"></div>
       <div class="form-group" id="dg-price-group"><label>Итоговая сумма по ДС</label><input type="text" id="dg-price" placeholder="100000"></div>
     </div>
   </div>
 
-  <div id="sub-block">
+  <div id="work-variant-block">
     <div class="section-title">Вариант исполнения</div>
-    <div class="type-buttons">
-      <button type="button" class="btn" id="btn-sub1">Иждивение</button>
-      <button type="button" class="btn" id="btn-sub2">Давальческое</button>
+    <div class="meta-hint" id="work-variant-meta-hint" style="display:none;"></div>
+    <div class="type-buttons" id="work-variant-buttons">
+      <button type="button" class="btn" id="btn-work-izh">Иждивение</button>
+      <button type="button" class="btn" id="btn-work-dav">Давальческое</button>
+    </div>
+    <div class="form-group" id="m15-group" style="display:none;">
+      <label>М-15</label>
+      <select id="i-m15">
+        <option value="">Не выбрано</option>
+        <option value="Есть">Есть</option>
+        <option value="Нет">Нет</option>
+      </select>
     </div>
   </div>
 
@@ -282,14 +285,10 @@
     </div>
 
     <div id="contract-upload-part">
-      <div class="form-group"><label>📄 Договор (файл)</label><input type="file" id="i-договор"></div>
+      <div style="font-size:12px;color:#777;">Файл договора добавьте в общую загрузку документов ниже.</div>
     </div>
 
     <div id="contract-generate-part" style="display:none;">
-      <div class="type-buttons">
-        <button type="button" class="btn active" id="cg-btn-izh">Иждивение</button>
-        <button type="button" class="btn" id="cg-btn-dav">Давальческие</button>
-      </div>
       <div class="type-buttons">
         <button type="button" class="btn active" id="cg-btn-nds">С НДС</button>
         <button type="button" class="btn" id="cg-btn-nonds">Без НДС</button>
@@ -321,10 +320,10 @@
         <select id="cg-signer"><option value="">⏳ Загрузка...</option></select>
       </div>
       <div class="form-group"><label>№ договора</label><input type="text" id="cg-num"></div>
-      <div class="form-group"><label>Дата (ДД.ММ.ГГГГ)</label><input type="text" id="cg-date" placeholder="01.01.2026"></div>
+      <div class="form-group"><label>Дата (ДД.ММ.ГГГГ)</label><input type="text" id="cg-date" placeholder="1.06.2026"></div>
       <div class="form-group"><label>Адрес объекта</label><input type="text" id="cg-addr"></div>
-      <div class="form-group"><label>Начало (ДД.ММ.ГГГГ)</label><input type="text" id="cg-start" placeholder="01.01.2026"></div>
-      <div class="form-group"><label>Конец (ДД.ММ.ГГГГ)</label><input type="text" id="cg-end" placeholder="01.01.2026"></div>
+      <div class="form-group"><label>Начало (ДД.ММ.ГГГГ)</label><input type="text" id="cg-start" placeholder="1.06.2026"></div>
+      <div class="form-group"><label>Конец (ДД.ММ.ГГГГ)</label><input type="text" id="cg-end" placeholder="1.06.2026"></div>
       <div class="form-group"><label>Сумма ИТОГО</label><input type="text" id="cg-price" placeholder="100000"></div>
       <div class="form-group"><label>Аванс %</label><input type="text" id="cg-adv" value="30"></div>
     </div>
@@ -332,28 +331,17 @@
 
   <form id="megaForm">
     <div id="form-fields" class="form-box">
-      <div class="form-group" id="f-contractor">
+      <div class="form-group">
         <label>Подрядчик *</label>
         <input type="text" id="contractor" placeholder="Наименование подрядчика" required>
       </div>
-      <div class="form-group" id="f-branch">
+      <div class="form-group">
         <label>Филиал *</label>
         <input type="text" id="branch" placeholder="Название филиала" required>
       </div>
-      <div class="form-group" id="f-смета"   style="display:none;"><label>📄 Смета</label><input type="file" id="i-смета"></div>
-      <div class="form-group" id="f-счет"    style="display:none;"><label>📄 Счет на оплату</label><input type="file" id="i-счет"></div>
-      <div class="form-group" id="f-дс"      style="display:none;"><label>📄 Доп. соглашение</label><input type="file" id="i-дс"></div>
-      <div class="form-group" id="f-кс2"     style="display:none;"><label>📄 КС-2</label><input type="file" id="i-кс2"></div>
-      <div class="form-group" id="f-кс3"     style="display:none;"><label>📄 КС-3</label><input type="file" id="i-кс3"></div>
-      <div class="form-group" id="f-упд"     style="display:none;"><label>📄 УПД / АКТ</label><input type="file" id="i-упд"></div>
-      <div class="form-group" id="f-отчет"   style="display:none;"><label>📄 Отчет давальческого</label><input type="file" id="i-отчет"></div>
-      <div class="form-group" id="f-m15"     style="display:none;">
-        <label>М-15</label>
-        <select id="i-m15">
-          <option value="">Не выбрано</option>
-          <option value="Есть">Есть</option>
-          <option value="Нет">Нет</option>
-        </select>
+      <div class="form-group">
+        <label>📎 Документы (можно выбрать сразу несколько файлов)</label>
+        <input type="file" id="mass-files" multiple>
       </div>
       <button type="submit" class="submit-btn" id="submit-new">📤 Отправить заявку</button>
     </div>
@@ -367,146 +355,13 @@
   <div class="fix-banner">Заявка № <strong id="fix-order-id-text"></strong></div>
   <form id="fixForm">
     <div class="form-box active">
-      <div class="form-group" id="ff-смета"   style="display:none;"><label>📄 Смета</label><input type="file" id="fi-смета"></div>
-      <div class="form-group" id="ff-договор" style="display:none;"><label>📄 Договор</label><input type="file" id="fi-договор"></div>
-      <div class="form-group" id="ff-счет"    style="display:none;"><label>📄 Счет на оплату</label><input type="file" id="fi-счет"></div>
-      <div class="form-group" id="ff-дс"      style="display:none;"><label>📄 Доп. соглашение</label><input type="file" id="fi-дс"></div>
-      <div class="form-group" id="ff-кс2"     style="display:none;"><label>📄 КС-2</label><input type="file" id="fi-кс2"></div>
-      <div class="form-group" id="ff-кс3"     style="display:none;"><label>📄 КС-3</label><input type="file" id="fi-кс3"></div>
-      <div class="form-group" id="ff-упд"     style="display:none;"><label>📄 УПД / АКТ</label><input type="file" id="fi-упд"></div>
-      <div class="form-group" id="ff-отчет"   style="display:none;"><label>📄 Отчет давальческого</label><input type="file" id="fi-отчет"></div>
+      <div class="form-group">
+        <label>📎 Файл</label>
+        <input type="file" id="fi-file">
+      </div>
       <button type="submit" class="submit-btn">📤 Загрузить исправленные</button>
     </div>
   </form>
-</div>
-
-<!-- ЭКРАН 5: МЕНЮ ФОРМИРОВАНИЯ ДОКУМЕНТОВ -->
-<div id="screen-docs-menu" class="screen">
-  <div class="page-header">📝 Формирование документов</div>
-  <button class="back-btn" id="back-from-docs-menu">← Назад</button>
-  <div class="menu-wrap">
-    <button class="menu-btn primary"   id="btn-go-contract">📄 Договор</button>
-    <button class="menu-btn secondary" id="btn-go-ds">📋 Доп. соглашение</button>
-  </div>
-</div>
-
-<!-- ЭКРАН 6: ФОРМА ДОГОВОРА (отдельный экран) -->
-<div id="screen-contract" class="screen">
-  <div class="page-header">📄 Формирование договора</div>
-  <button class="back-btn" id="back-from-contract">← Назад</button>
-
-  <div class="form-box active">
-    <div class="section-title">Вид выполняемых работ</div>
-    <div class="form-group">
-      <select id="c-work-kind">
-        <option value="Строительно-монтажные работы">Строительно-монтажные работы</option>
-        <option value="Электромонтажные работы">Электромонтажные работы</option>
-        <option value="Слаботочные работы">Слаботочные работы</option>
-        <option value="Замеры помещения">Замеры помещения</option>
-      </select>
-    </div>
-
-    <div class="section-title">Тип работ</div>
-    <div class="type-buttons" id="c-work-buttons">
-      <button type="button" class="btn active" id="c-btn-izh">Иждивение</button>
-      <button type="button" class="btn" id="c-btn-dav">Давальческие</button>
-    </div>
-
-    <div class="section-title">Налогообложение</div>
-    <div class="type-buttons" id="c-nds-buttons">
-      <button type="button" class="btn active" id="c-btn-nds">С НДС</button>
-      <button type="button" class="btn" id="c-btn-nonds">Без НДС</button>
-    </div>
-    <div class="form-group" id="c-nds-rate-group">
-      <label>Ставка НДС</label>
-      <select id="c-nds-rate">
-        <option value="5">5%</option>
-        <option value="7">7%</option>
-        <option value="20">20%</option>
-        <option value="22" selected>22%</option>
-      </select>
-    </div>
-
-    <div class="section-title">Стороны</div>
-    <div class="form-group">
-      <label>Подрядчик</label>
-      <select id="c-contractor"><option value="">⏳ Загрузка...</option></select>
-    </div>
-    <div class="form-group">
-      <label>Наш подписант</label>
-      <select id="c-signer"><option value="">⏳ Загрузка...</option></select>
-    </div>
-
-    <div class="section-title">Параметры договора</div>
-    <div class="form-group"><label>№ договора</label><input type="text" id="c-num"></div>
-    <div class="form-group"><label>Дата (ДД.ММ.ГГГГ)</label><input type="text" id="c-date" placeholder="01.01.2026"></div>
-    <div class="form-group"><label>Адрес объекта</label><input type="text" id="c-addr"></div>
-    <div class="form-group"><label>Начало (ДД.ММ.ГГГГ)</label><input type="text" id="c-start" placeholder="01.01.2026"></div>
-    <div class="form-group"><label>Конец (ДД.ММ.ГГГГ)</label><input type="text" id="c-end" placeholder="01.01.2026"></div>
-    <div class="form-group"><label>Сумма ИТОГО</label><input type="text" id="c-price" placeholder="100000"></div>
-    <div class="form-group"><label>Аванс %</label><input type="text" id="c-adv" value="30"></div>
-
-    <button type="button" class="submit-btn" id="btn-gen-contract">📤 Сформировать договор</button>
-  </div>
-</div>
-
-<!-- ЭКРАН 7: ФОРМА ДС (отдельный экран) -->
-<div id="screen-ds" class="screen">
-  <div class="page-header">📋 Формирование доп. соглашения</div>
-  <button class="back-btn" id="back-from-ds">← Назад</button>
-
-  <div class="form-box active">
-    <div class="section-title">Вариант</div>
-    <div class="type-buttons" id="ds-work-buttons">
-      <button type="button" class="btn active" id="ds-btn-izh">Иждивение (№2)</button>
-      <button type="button" class="btn" id="ds-btn-dav">Давальческое (№4)</button>
-    </div>
-
-    <div class="section-title">Что меняется в ДС?</div>
-    <div class="form-group">
-      <select id="ds-type">
-        <option value="И сроки и сумма">И сроки и сумма</option>
-        <option value="Только сроки">Только сроки</option>
-        <option value="Только сумма">Только сумма</option>
-      </select>
-    </div>
-
-    <div class="section-title">Налогообложение</div>
-    <div class="type-buttons" id="ds-nds-buttons">
-      <button type="button" class="btn active" id="ds-btn-nds">С НДС</button>
-      <button type="button" class="btn" id="ds-btn-nonds">Без НДС</button>
-    </div>
-    <div class="form-group" id="ds-nds-rate-group">
-      <label>Ставка НДС</label>
-      <select id="ds-nds-rate">
-        <option value="5">5%</option>
-        <option value="7">7%</option>
-        <option value="20">20%</option>
-        <option value="22" selected>22%</option>
-      </select>
-    </div>
-
-    <div class="section-title">Стороны</div>
-    <div class="form-group">
-      <label>Подрядчик</label>
-      <select id="ds-contractor"><option value="">⏳ Загрузка...</option></select>
-    </div>
-    <div class="form-group">
-      <label>Наш подписант</label>
-      <select id="ds-signer"><option value="">⏳ Загрузка...</option></select>
-    </div>
-
-    <div class="section-title">Реквизиты ДС</div>
-    <div class="form-group"><label>№ Доп. соглашения</label><input type="text" id="ds-num"></div>
-    <div class="form-group"><label>Дата ДС (ДД.ММ.ГГГГ)</label><input type="text" id="ds-date" placeholder="01.01.2026"></div>
-    <div class="form-group"><label>№ Основного договора</label><input type="text" id="ds-main-num"></div>
-    <div class="form-group"><label>Дата Основного договора</label><input type="text" id="ds-main-date" placeholder="01.01.2026"></div>
-    <div class="form-group" id="ds-start-group"><label>Срок начала ремонта</label><input type="text" id="ds-start" placeholder="01.01.2026"></div>
-    <div class="form-group" id="ds-end-group"><label>Срок окончания ремонта</label><input type="text" id="ds-end" placeholder="01.01.2026"></div>
-    <div class="form-group" id="ds-price-group"><label>Итоговая сумма по ДС</label><input type="text" id="ds-price" placeholder="100000"></div>
-
-    <button type="button" class="submit-btn" id="btn-gen-ds">📤 Сформировать ДС</button>
-  </div>
 </div>
 
 <script>
@@ -531,38 +386,10 @@ try {
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwyu12Esfnkq_CKmUtCp8jOD9VwZaNwpzCpvH3ZqJzqsyr914YdIOlgBpwZywd_gYLliQ/exec';
 
 let currentMain       = '';
-let currentSub        = '';
+let currentSub        = ''; // 'иждивение' / 'давальческое' — единый вариант исполнения на всю форму
 let currentFixOrderId = '';
 let cachedOrders      = [];
 let currentLinkedContractMeta = null;
-
-// Применяет данные договора из предоплаты к форме ДС (кроме № ДС, дат ремонта и суммы ДС — их вводят вручную)
-function applyContractMetaBasics(meta) {
-  var hint = document.getElementById('dg-meta-hint');
-  if (!meta) {
-    hint.style.display = 'none';
-    return;
-  }
-
-  if (meta.docNum)  document.getElementById('dg-main-num').value  = meta.docNum;
-  if (meta.docDate) document.getElementById('dg-main-date').value = meta.docDate;
-
-  var mappedWork = meta.workType === 'Давальческие' ? 'Давальческое' : 'Иждивение';
-  if (mappedWork === 'Давальческое') {
-    document.getElementById('dg-btn-dav').click();
-  } else {
-    document.getElementById('dg-btn-izh').click();
-  }
-
-  if (meta.nds === 'Без НДС') {
-    document.getElementById('dg-btn-nonds').click();
-  } else {
-    document.getElementById('dg-btn-nds').click();
-    if (meta.ndsRate) document.getElementById('dg-nds-rate').value = meta.ndsRate;
-  }
-
-  hint.style.display = 'block';
-}
 
 // ===== ЭКРАНЫ =====
 function showScreen(id) {
@@ -598,34 +425,54 @@ document.getElementById('btn-status3').addEventListener('click', function() { se
 function selectMain(type) {
   currentMain = type;
   currentSub  = '';
+  currentLinkedContractMeta = null;
 
-  document.querySelectorAll('#sub-block .btn').forEach(function(b) { b.classList.remove('active'); });
   document.querySelectorAll('#payment-type-buttons .btn').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('btn-' + type).classList.add('active');
 
-  hideAllFields();
-  document.getElementById('form-fields').classList.remove('active');
-  document.getElementById('sub-block').style.display         = 'none';
-  document.getElementById('doplata-block').style.display     = 'none';
-  document.getElementById('linked-order-info').style.display = 'none';
-  document.getElementById('contract-block').style.display    = 'none';
+  document.getElementById('doplata-block').style.display      = 'none';
+  document.getElementById('linked-order-info').style.display  = 'none';
+  document.getElementById('contract-block').style.display     = 'none';
+  document.getElementById('work-variant-block').style.display = 'none';
+  document.getElementById('m15-group').style.display           = 'none';
+  document.getElementById('i-m15').value = '';
+  resetWorkVariantButtons();
   resetDsGenerateCheckbox();
+  document.getElementById('form-fields').classList.remove('active');
 
   if (type === 'status1') {
-    showFields(['f-смета', 'f-счет']);
-    document.getElementById('contract-block').style.display = 'block';
+    document.getElementById('work-variant-block').style.display = 'block';
+    document.getElementById('contract-block').style.display     = 'block';
     loadDocMeta('cg-contractor', 'cg-signer');
     document.getElementById('form-fields').classList.add('active');
   } else if (type === 'status2') {
-    document.getElementById('doplata-block').style.display = 'block';
-    document.getElementById('sub-block').style.display     = 'block';
+    document.getElementById('doplata-block').style.display      = 'block';
+    document.getElementById('work-variant-block').style.display = 'block';
     loadDoplataOrders();
+    document.getElementById('form-fields').classList.add('active');
   } else if (type === 'status3') {
-    document.getElementById('sub-block').style.display = 'block';
-    document.getElementById('contract-block').style.display = 'block';
+    document.getElementById('work-variant-block').style.display = 'block';
+    document.getElementById('contract-block').style.display     = 'block';
     loadDocMeta('cg-contractor', 'cg-signer');
     document.getElementById('form-fields').classList.add('active');
   }
+}
+
+// ===== ВАРИАНТ ИСПОЛНЕНИЯ (единый переключатель на форму) =====
+function resetWorkVariantButtons() {
+  document.querySelectorAll('#work-variant-buttons .btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById('work-variant-buttons').style.display = 'flex';
+  document.getElementById('work-variant-meta-hint').style.display = 'none';
+}
+
+document.getElementById('btn-work-izh').addEventListener('click', function(){ selectWorkVariant('иждивение'); });
+document.getElementById('btn-work-dav').addEventListener('click', function(){ selectWorkVariant('давальческое'); });
+
+function selectWorkVariant(variant) {
+  currentSub = variant;
+  document.querySelectorAll('#work-variant-buttons .btn').forEach(function(b){ b.classList.remove('active'); });
+  document.getElementById(variant === 'иждивение' ? 'btn-work-izh' : 'btn-work-dav').classList.add('active');
+  document.getElementById('m15-group').style.display = variant === 'давальческое' ? 'block' : 'none';
 }
 
 // ===== ЗАГРУЗКА ЗАЯВОК ДЛЯ ДОПЛАТЫ =====
@@ -663,12 +510,14 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   var details    = document.getElementById('linked-order-details');
   var link       = document.getElementById('linked-order-link');
 
-  if (!selectedId || selectedId === 'none') {
+  if (!selectedId || selectedId === 'none' || selectedId === '__none__') {
     infoBlock.style.display = 'none';
     document.getElementById('contractor').value = '';
     document.getElementById('branch').value     = '';
-    document.getElementById('form-fields').classList.add('active');
     currentLinkedContractMeta = null;
+    currentSub = '';
+    resetWorkVariantButtons();
+    document.getElementById('m15-group').style.display = 'none';
     return;
   }
 
@@ -691,9 +540,22 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   infoBlock.style.display = 'block';
   document.getElementById('contractor').value = order.contractor || '';
   document.getElementById('branch').value     = order.branch     || '';
-  document.getElementById('form-fields').classList.add('active');
 
   currentLinkedContractMeta = order.contractMeta || null;
+
+  if (currentLinkedContractMeta && currentLinkedContractMeta.workType) {
+    var mapped = currentLinkedContractMeta.workType === 'Давальческие' ? 'давальческое' : 'иждивение';
+    currentSub = mapped;
+    document.getElementById('work-variant-buttons').style.display = 'none';
+    var hint = document.getElementById('work-variant-meta-hint');
+    hint.style.display = 'block';
+    hint.textContent = '✅ Определено по предоплате: ' + (mapped === 'давальческое' ? 'Давальческое' : 'Иждивение');
+    document.getElementById('m15-group').style.display = mapped === 'давальческое' ? 'block' : 'none';
+  } else {
+    currentSub = '';
+    resetWorkVariantButtons();
+    document.getElementById('m15-group').style.display = 'none';
+  }
 });
 
 // ===== ДС В ДОПЛАТЕ: ЧЕКБОКС "ТРЕБУЕТСЯ ДОП. СОГЛАШЕНИЕ?" =====
@@ -702,15 +564,12 @@ function resetDsGenerateCheckbox() {
   chk.checked = false;
   document.getElementById('ds-generate-block').style.display = 'none';
   document.getElementById('dg-meta-hint').style.display = 'none';
-  currentLinkedContractMeta = null;
 }
 
 document.getElementById('ds-need-checkbox').addEventListener('change', async function() {
   var block = document.getElementById('ds-generate-block');
-  var fileField = document.getElementById('f-дс');
   if (this.checked) {
     block.style.display = 'block';
-    if (fileField) fileField.style.display = 'none';
     await loadDocMeta('dg-contractor', 'dg-signer');
 
     if (currentLinkedContractMeta) {
@@ -720,11 +579,20 @@ document.getElementById('ds-need-checkbox').addEventListener('change', async fun
       if (currentLinkedContractMeta.signerKey) {
         document.getElementById('dg-signer').value = currentLinkedContractMeta.signerKey;
       }
-      applyContractMetaBasics(currentLinkedContractMeta);
+      if (currentLinkedContractMeta.docNum)  document.getElementById('dg-main-num').value  = currentLinkedContractMeta.docNum;
+      if (currentLinkedContractMeta.docDate) document.getElementById('dg-main-date').value = currentLinkedContractMeta.docDate;
+
+      if (currentLinkedContractMeta.nds === 'Без НДС') {
+        document.getElementById('dg-btn-nonds').click();
+      } else {
+        document.getElementById('dg-btn-nds').click();
+        if (currentLinkedContractMeta.ndsRate) document.getElementById('dg-nds-rate').value = currentLinkedContractMeta.ndsRate;
+      }
+
+      document.getElementById('dg-meta-hint').style.display = 'block';
     }
   } else {
     block.style.display = 'none';
-    if (fileField) fileField.style.display = 'block';
   }
 });
 
@@ -732,19 +600,7 @@ document.getElementById('dg-contractor').addEventListener('change', function() {
   if (this.value) document.getElementById('contractor').value = this.value;
 });
 
-var dgWork = 'Иждивение';
-var dgNds  = 'С НДС';
-
-document.getElementById('dg-btn-izh').addEventListener('click', function() {
-  dgWork = 'Иждивение';
-  document.getElementById('dg-btn-izh').classList.add('active');
-  document.getElementById('dg-btn-dav').classList.remove('active');
-});
-document.getElementById('dg-btn-dav').addEventListener('click', function() {
-  dgWork = 'Давальческое';
-  document.getElementById('dg-btn-dav').classList.add('active');
-  document.getElementById('dg-btn-izh').classList.remove('active');
-});
+var dgNds = 'С НДС';
 document.getElementById('dg-btn-nds').addEventListener('click', function() {
   dgNds = 'С НДС';
   document.getElementById('dg-btn-nds').classList.add('active');
@@ -771,42 +627,6 @@ document.getElementById('dg-type').addEventListener('change', function() {
     (showPrice && dgNds === 'С НДС') ? 'block' : 'none';
 });
 
-// ===== ПОДТИП (Иждивение/Давальческое для набора файлов) =====
-document.getElementById('btn-sub1').addEventListener('click', function() { selectSub('иждивение'); });
-document.getElementById('btn-sub2').addEventListener('click', function() { selectSub('давальческое'); });
-
-function selectSub(sub) {
-  currentSub = sub;
-  document.querySelectorAll('#sub-block .btn').forEach(function(b) { b.classList.remove('active'); });
-  document.getElementById(sub === 'иждивение' ? 'btn-sub1' : 'btn-sub2').classList.add('active');
-  hideAllFields();
-  if (sub === 'иждивение') {
-    showFields(['f-смета', 'f-дс', 'f-кс2', 'f-кс3', 'f-упд', 'f-счет']);
-  } else {
-    showFields(['f-смета', 'f-дс', 'f-кс2', 'f-кс3', 'f-упд', 'f-отчет', 'f-m15', 'f-счет']);
-  }
-  document.getElementById('form-fields').classList.add('active');
-
-  // Если в Доплате уже включена генерация ДС — файл ДС остаётся скрытым
-  if (currentMain === 'status2' && document.getElementById('ds-need-checkbox').checked) {
-    document.getElementById('f-дс').style.display = 'none';
-  }
-}
-
-function hideAllFields() {
-  ['f-смета','f-счет','f-дс','f-кс2','f-кс3','f-упд','f-отчет','f-m15'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-}
-
-function showFields(ids) {
-  ids.forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.style.display = 'block';
-  });
-}
-
 // ===== ДОГОВОР (для Предоплаты и Оплаты100): ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА =====
 var contractGenerateMode = false;
 
@@ -829,19 +649,7 @@ document.getElementById('cg-contractor').addEventListener('change', function() {
   if (this.value) document.getElementById('contractor').value = this.value;
 });
 
-var cgWorkType = 'Иждивение';
-var cgNds      = 'С НДС';
-
-document.getElementById('cg-btn-izh').addEventListener('click', function() {
-  cgWorkType = 'Иждивение';
-  document.getElementById('cg-btn-izh').classList.add('active');
-  document.getElementById('cg-btn-dav').classList.remove('active');
-});
-document.getElementById('cg-btn-dav').addEventListener('click', function() {
-  cgWorkType = 'Давальческие';
-  document.getElementById('cg-btn-dav').classList.add('active');
-  document.getElementById('cg-btn-izh').classList.remove('active');
-});
+var cgNds = 'С НДС';
 document.getElementById('cg-btn-nds').addEventListener('click', function() {
   cgNds = 'С НДС';
   document.getElementById('cg-btn-nds').classList.add('active');
@@ -864,6 +672,26 @@ function readFile(inputId) {
     reader.onload  = function(e) { resolve({ data: e.target.result, name: input.files[0].name }); };
     reader.onerror = function()  { resolve({ data: null, name: '' }); };
     reader.readAsDataURL(input.files[0]);
+  });
+}
+
+// ===== МАССОВОЕ ЧТЕНИЕ НЕСКОЛЬКИХ ФАЙЛОВ =====
+function readMassFiles(inputId) {
+  return new Promise(function(resolve) {
+    var input = document.getElementById(inputId);
+    if (!input || !input.files || !input.files.length) return resolve([]);
+    var files = Array.prototype.slice.call(input.files);
+    var promises = files.map(function(file) {
+      return new Promise(function(res) {
+        var reader = new FileReader();
+        reader.onload  = function(e) { res({ data: e.target.result, name: file.name }); };
+        reader.onerror = function()  { res(null); };
+        reader.readAsDataURL(file);
+      });
+    });
+    Promise.all(promises).then(function(results) {
+      resolve(results.filter(function(r) { return r !== null; }));
+    });
   });
 }
 
@@ -916,9 +744,7 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
   e.preventDefault();
 
   if (!currentMain) { alert('Выберите тип оплаты!'); return; }
-  if ((currentMain === 'status2' || currentMain === 'status3') && !currentSub) {
-    alert('Выберите вариант исполнения!'); return;
-  }
+  if (!currentSub)  { alert('Выберите вариант исполнения!'); return; }
 
   var linkedOrderId   = '';
   var linkedFolderUrl = '';
@@ -934,14 +760,12 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     }
   }
 
-  // Валидация генерации договора (Предоплата / Оплата100)
   if ((currentMain === 'status1' || currentMain === 'status3') && contractGenerateMode) {
     if (!document.getElementById('cg-contractor').value) { alert('Выберите подрядчика для договора!'); return; }
     if (!document.getElementById('cg-signer').value)      { alert('Выберите подписанта для договора!'); return; }
     if (!document.getElementById('cg-num').value.trim())  { alert('Укажите номер договора!'); return; }
   }
 
-  // Валидация генерации ДС (Доплата)
   var dsGenerateChecked = currentMain === 'status2' && document.getElementById('ds-need-checkbox').checked;
   if (dsGenerateChecked) {
     if (!document.getElementById('dg-contractor').value) { alert('Выберите подрядчика для ДС!'); return; }
@@ -954,15 +778,8 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
   btn.textContent = '⏳ Отправка...';
 
   try {
-    var смета   = await readFile('i-смета');
-    var договор = contractGenerateMode ? { data: null, name: '' } : await readFile('i-договор');
-    var счет    = await readFile('i-счет');
-    var дс      = dsGenerateChecked ? { data: null, name: '' } : await readFile('i-дс');
-    var кс2     = await readFile('i-кс2');
-    var кс3     = await readFile('i-кс3');
-    var упд     = await readFile('i-упд');
-    var отчет   = await readFile('i-отчет');
-    var m15     = document.getElementById('i-m15') ? document.getElementById('i-m15').value : '';
+    var massFiles = await readMassFiles('mass-files');
+    var m15 = document.getElementById('i-m15') ? document.getElementById('i-m15').value : '';
 
     var payload = {
       mode: 'new',
@@ -975,19 +792,12 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       m15: m15,
       linkedOrderId: linkedOrderId,
       linkedFolderUrl: linkedFolderUrl,
-      сметаData:   смета.data,   сметаName:   смета.name,
-      договорData: договор.data, договорName: договор.name,
-      счетData:    счет.data,    счетName:    счет.name,
-      дсData:      дс.data,      дсName:      дс.name,
-      кс2Data:     кс2.data,     кс2Name:     кс2.name,
-      кс3Data:     кс3.data,     кс3Name:     кс3.name,
-      упдData:     упд.data,     упдName:     упд.name,
-      отчетData:   отчет.data,   отчетName:   отчет.name
+      massFiles: massFiles
     };
 
     if ((currentMain === 'status1' || currentMain === 'status3') && contractGenerateMode) {
       payload.contractGenerate  = true;
-      payload.contractWorkType  = cgWorkType;
+      payload.contractWorkType  = currentSub === 'давальческое' ? 'Давальческие' : 'Иждивение';
       payload.contractNds       = cgNds;
       payload.contractNdsRate   = document.getElementById('cg-nds-rate').value;
       payload.contractorKey     = document.getElementById('cg-contractor').value;
@@ -1003,40 +813,40 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     }
 
     if (dsGenerateChecked) {
-      payload.dsGenerate        = true;
-      payload.dsGenWork         = dgWork;
-      payload.dsGenType         = document.getElementById('dg-type').value;
-      payload.dsGenNds          = dgNds;
-      payload.dsGenNdsRate      = document.getElementById('dg-nds-rate').value;
+      payload.dsGenerate         = true;
+      payload.dsGenWork          = currentSub === 'давальческое' ? 'Давальческое' : 'Иждивение';
+      payload.dsGenType          = document.getElementById('dg-type').value;
+      payload.dsGenNds           = dgNds;
+      payload.dsGenNdsRate       = document.getElementById('dg-nds-rate').value;
       payload.dsGenContractorKey = document.getElementById('dg-contractor').value;
-      payload.dsGenSignerKey    = document.getElementById('dg-signer').value;
-      payload.dsGenNum          = document.getElementById('dg-num').value.trim();
-      payload.dsGenDate         = document.getElementById('dg-date').value.trim();
-      payload.dsGenMainNum      = document.getElementById('dg-main-num').value.trim();
-      payload.dsGenMainDate     = document.getElementById('dg-main-date').value.trim();
-      payload.dsGenStart        = document.getElementById('dg-start').value.trim();
-      payload.dsGenEnd          = document.getElementById('dg-end').value.trim();
-      payload.dsGenPrice        = document.getElementById('dg-price').value.trim();
+      payload.dsGenSignerKey     = document.getElementById('dg-signer').value;
+      payload.dsGenNum           = document.getElementById('dg-num').value.trim();
+      payload.dsGenDate          = document.getElementById('dg-date').value.trim();
+      payload.dsGenMainNum       = document.getElementById('dg-main-num').value.trim();
+      payload.dsGenMainDate      = document.getElementById('dg-main-date').value.trim();
+      payload.dsGenStart         = document.getElementById('dg-start').value.trim();
+      payload.dsGenEnd           = document.getElementById('dg-end').value.trim();
+      payload.dsGenPrice         = document.getElementById('dg-price').value.trim();
     }
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 
     alert('✅ Заявка отправлена!\n\nПроверьте Telegram — придёт подтверждение с номером заявки.');
     this.reset();
-    hideAllFields();
     document.getElementById('form-fields').classList.remove('active');
-    document.getElementById('sub-block').style.display          = 'none';
     document.getElementById('doplata-block').style.display      = 'none';
     document.getElementById('linked-order-info').style.display  = 'none';
     document.getElementById('contract-block').style.display     = 'none';
+    document.getElementById('work-variant-block').style.display = 'none';
     document.getElementById('contract-upload-part').style.display = 'block';
     document.getElementById('contract-generate-part').style.display = 'none';
     document.getElementById('contract-mode-upload').classList.add('active');
     document.getElementById('contract-mode-generate').classList.remove('active');
     contractGenerateMode = false;
     resetDsGenerateCheckbox();
+    resetWorkVariantButtons();
     document.querySelectorAll('.btn').forEach(function(b) { b.classList.remove('active'); });
-    currentMain = ''; currentSub = '';
+    currentMain = ''; currentSub = ''; currentLinkedContractMeta = null;
     showScreen('screen-menu');
 
   } catch(err) {
@@ -1165,11 +975,7 @@ function renderOrders(orders) {
 
   list.querySelectorAll('button[data-id]').forEach(function(b) {
     b.addEventListener('click', function() {
-      openFixScreen(
-        this.getAttribute('data-id'),
-        this.getAttribute('data-payment'),
-        this.getAttribute('data-m15')
-      );
+      openFixScreen(this.getAttribute('data-id'));
     });
   });
 }
@@ -1190,29 +996,9 @@ document.getElementById('searchInput').addEventListener('input', function() {
 });
 
 // ===== ЭКРАН ИСПРАВЛЕННЫХ =====
-function openFixScreen(orderId, paymentType, m15) {
+function openFixScreen(orderId) {
   currentFixOrderId = orderId;
   document.getElementById('fix-order-id-text').textContent = orderId;
-
-  ['ff-смета','ff-договор','ff-счет','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-отчет'].forEach(function(id) {
-    var el = document.getElementById(id);
-    if (el) el.style.display = 'none';
-  });
-
-  if (paymentType === 'предоплата' || paymentType === 'status1') {
-    ['ff-смета','ff-договор','ff-счет'].forEach(function(id) {
-      document.getElementById(id).style.display = 'block';
-    });
-  } else if (m15 === 'Есть') {
-    ['ff-смета','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-отчет','ff-счет'].forEach(function(id) {
-      document.getElementById(id).style.display = 'block';
-    });
-  } else {
-    ['ff-смета','ff-дс','ff-кс2','ff-кс3','ff-упд','ff-счет'].forEach(function(id) {
-      document.getElementById(id).style.display = 'block';
-    });
-  }
-
   showScreen('screen-fix');
 }
 
@@ -1225,28 +1011,15 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
   btn.textContent = '⏳ Загрузка...';
 
   try {
-    var смета   = await readFile('fi-смета');
-    var договор = await readFile('fi-договор');
-    var счет    = await readFile('fi-счет');
-    var дс      = await readFile('fi-дс');
-    var кс2     = await readFile('fi-кс2');
-    var кс3     = await readFile('fi-кс3');
-    var упд     = await readFile('fi-упд');
-    var отчет   = await readFile('fi-отчет');
+    var file = await readFile('fi-file');
 
     var payload = {
       mode: 'fix',
       tg_id: tgId,
       tg_username: tgUsername,
       orderId: currentFixOrderId,
-      сметаData:   смета.data,   сметаName:   смета.name,
-      договорData: договор.data, договорName: договор.name,
-      счетData:    счет.data,    счетName:    счет.name,
-      дсData:      дс.data,      дсName:      дс.name,
-      кс2Data:     кс2.data,     кс2Name:     кс2.name,
-      кс3Data:     кс3.data,     кс3Name:     кс3.name,
-      упдData:     упд.data,     упдName:     упд.name,
-      отчетData:   отчет.data,   отчетName:   отчет.name
+      fileData: file.data,
+      fileName: file.name
     };
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -1264,29 +1037,7 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
   }
 });
 
-// ===== ФОРМИРОВАНИЕ ДОКУМЕНТОВ (отдельные экраны): НАВИГАЦИЯ =====
-document.getElementById('btn-go-docs').addEventListener('click', function() {
-  showScreen('screen-docs-menu');
-});
-document.getElementById('back-from-docs-menu').addEventListener('click', function() {
-  showScreen('screen-menu');
-});
-document.getElementById('btn-go-contract').addEventListener('click', function() {
-  showScreen('screen-contract');
-  loadDocMeta('c-contractor', 'c-signer');
-});
-document.getElementById('back-from-contract').addEventListener('click', function() {
-  showScreen('screen-docs-menu');
-});
-document.getElementById('btn-go-ds').addEventListener('click', function() {
-  showScreen('screen-ds');
-  loadDocMeta('ds-contractor', 'ds-signer');
-});
-document.getElementById('back-from-ds').addEventListener('click', function() {
-  showScreen('screen-docs-menu');
-});
-
-// ===== ЗАГРУЗКА СПИСКОВ ПОДРЯДЧИКОВ / ПОДПИСАНТОВ (общий кэш для всех форм) =====
+// ===== ЗАГРУЗКА СПИСКОВ ПОДРЯДЧИКОВ / ПОДПИСАНТОВ (общий кэш) =====
 var docMetaCache = null;
 async function loadDocMeta(contractorSelectId, signerSelectId) {
   var contractorSelect = document.getElementById(contractorSelectId);
@@ -1336,184 +1087,6 @@ function fillDocSelects(contractorSelect, signerSelect) {
     signerSelect.appendChild(opt);
   });
 }
-
-// ===== ОТДЕЛЬНЫЙ ЭКРАН ДОГОВОРА: ПЕРЕКЛЮЧАТЕЛИ =====
-var contractWorkType = 'Иждивение';
-var contractNds      = 'С НДС';
-
-document.getElementById('c-btn-izh').addEventListener('click', function() {
-  contractWorkType = 'Иждивение';
-  document.getElementById('c-btn-izh').classList.add('active');
-  document.getElementById('c-btn-dav').classList.remove('active');
-});
-document.getElementById('c-btn-dav').addEventListener('click', function() {
-  contractWorkType = 'Давальческие';
-  document.getElementById('c-btn-dav').classList.add('active');
-  document.getElementById('c-btn-izh').classList.remove('active');
-});
-document.getElementById('c-btn-nds').addEventListener('click', function() {
-  contractNds = 'С НДС';
-  document.getElementById('c-btn-nds').classList.add('active');
-  document.getElementById('c-btn-nonds').classList.remove('active');
-  document.getElementById('c-nds-rate-group').style.display = 'block';
-});
-document.getElementById('c-btn-nonds').addEventListener('click', function() {
-  contractNds = 'Без НДС';
-  document.getElementById('c-btn-nonds').classList.add('active');
-  document.getElementById('c-btn-nds').classList.remove('active');
-  document.getElementById('c-nds-rate-group').style.display = 'none';
-});
-
-// ===== ОТПРАВКА ДОГОВОРА (отдельный экран) =====
-document.getElementById('btn-gen-contract').addEventListener('click', async function() {
-  var contractorKey = document.getElementById('c-contractor').value;
-  var signerKey      = document.getElementById('c-signer').value;
-  var docNum         = document.getElementById('c-num').value.trim();
-
-  if (!contractorKey) { alert('Выберите подрядчика!'); return; }
-  if (!signerKey)      { alert('Выберите подписанта!'); return; }
-  if (!docNum)          { alert('Укажите номер договора!'); return; }
-
-  var btn = this;
-  btn.disabled    = true;
-  btn.textContent = '⏳ Формирование...';
-
-  try {
-    var payload = {
-      mode: 'genContract',
-      tg_id: tgId,
-      tg_username: tgUsername,
-      workType: contractWorkType,
-      nds: contractNds,
-      ndsRate: document.getElementById('c-nds-rate').value,
-      contractorKey: contractorKey,
-      signerKey: signerKey,
-      workKind: document.getElementById('c-work-kind').value,
-      docNum: docNum,
-      docDate: document.getElementById('c-date').value.trim(),
-      objAddress: document.getElementById('c-addr').value.trim(),
-      startDate: document.getElementById('c-start').value.trim(),
-      endDate: document.getElementById('c-end').value.trim(),
-      price: document.getElementById('c-price').value.trim(),
-      advPercent: document.getElementById('c-adv').value.trim()
-    };
-
-    var resp = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    });
-    var result = await resp.json();
-
-    if (result.status === 'ok') {
-      alert('✅ Договор сформирован!\n\nСсылка на PDF придёт в Telegram.');
-      showScreen('screen-docs-menu');
-    } else {
-      alert('❌ Ошибка: ' + (result.message || 'неизвестная'));
-    }
-  } catch(err) {
-    alert('❌ Ошибка отправки: ' + err.message);
-  } finally {
-    btn.disabled    = false;
-    btn.textContent = '📤 Сформировать договор';
-  }
-});
-
-// ===== ОТДЕЛЬНЫЙ ЭКРАН ДС: ПЕРЕКЛЮЧАТЕЛИ =====
-var dsWork = 'Иждивение';
-var dsNds  = 'С НДС';
-
-document.getElementById('ds-btn-izh').addEventListener('click', function() {
-  dsWork = 'Иждивение';
-  document.getElementById('ds-btn-izh').classList.add('active');
-  document.getElementById('ds-btn-dav').classList.remove('active');
-});
-document.getElementById('ds-btn-dav').addEventListener('click', function() {
-  dsWork = 'Давальческое';
-  document.getElementById('ds-btn-dav').classList.add('active');
-  document.getElementById('ds-btn-izh').classList.remove('active');
-});
-document.getElementById('ds-btn-nds').addEventListener('click', function() {
-  dsNds = 'С НДС';
-  document.getElementById('ds-btn-nds').classList.add('active');
-  document.getElementById('ds-btn-nonds').classList.remove('active');
-  if (document.getElementById('ds-type').value !== 'Только сроки') {
-    document.getElementById('ds-nds-rate-group').style.display = 'block';
-  }
-});
-document.getElementById('ds-btn-nonds').addEventListener('click', function() {
-  dsNds = 'Без НДС';
-  document.getElementById('ds-btn-nonds').classList.add('active');
-  document.getElementById('ds-btn-nds').classList.remove('active');
-  document.getElementById('ds-nds-rate-group').style.display = 'none';
-});
-
-document.getElementById('ds-type').addEventListener('change', function() {
-  var dsType = this.value;
-  var showDates = dsType !== 'Только сумма';
-  var showPrice = dsType !== 'Только сроки';
-
-  document.getElementById('ds-start-group').style.display = showDates ? 'block' : 'none';
-  document.getElementById('ds-end-group').style.display   = showDates ? 'block' : 'none';
-  document.getElementById('ds-price-group').style.display = showPrice ? 'block' : 'none';
-  document.getElementById('ds-nds-rate-group').style.display =
-    (showPrice && dsNds === 'С НДС') ? 'block' : 'none';
-});
-
-// ===== ОТПРАВКА ДС (отдельный экран) =====
-document.getElementById('btn-gen-ds').addEventListener('click', async function() {
-  var contractorKey = document.getElementById('ds-contractor').value;
-  var signerKey      = document.getElementById('ds-signer').value;
-  var dsNum          = document.getElementById('ds-num').value.trim();
-
-  if (!contractorKey) { alert('Выберите подрядчика!'); return; }
-  if (!signerKey)      { alert('Выберите подписанта!'); return; }
-  if (!dsNum)           { alert('Укажите номер ДС!'); return; }
-
-  var btn = this;
-  btn.disabled    = true;
-  btn.textContent = '⏳ Формирование...';
-
-  try {
-    var payload = {
-      mode: 'genDS',
-      tg_id: tgId,
-      tg_username: tgUsername,
-      dsWork: dsWork,
-      dsType: document.getElementById('ds-type').value,
-      ndsChoice: dsNds,
-      ndsRate: document.getElementById('ds-nds-rate').value,
-      contractorKey: contractorKey,
-      signerKey: signerKey,
-      dsNum: dsNum,
-      dsDate: document.getElementById('ds-date').value.trim(),
-      mainNum: document.getElementById('ds-main-num').value.trim(),
-      mainDate: document.getElementById('ds-main-date').value.trim(),
-      dsStart: document.getElementById('ds-start').value.trim(),
-      dsEnd: document.getElementById('ds-end').value.trim(),
-      dsPrice: document.getElementById('ds-price').value.trim()
-    };
-
-    var resp = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    });
-    var result = await resp.json();
-
-    if (result.status === 'ok') {
-      alert('✅ Доп. соглашение сформировано!\n\nСсылка на PDF придёт в Telegram.');
-      showScreen('screen-docs-menu');
-    } else {
-      alert('❌ Ошибка: ' + (result.message || 'неизвестная'));
-    }
-  } catch(err) {
-    alert('❌ Ошибка отправки: ' + err.message);
-  } finally {
-    btn.disabled    = false;
-    btn.textContent = '📤 Сформировать ДС';
-  }
-});
 </script>
 </body>
 </html>
