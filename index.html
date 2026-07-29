@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -260,6 +259,10 @@
       <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="date" id="dg-start"></div>
       <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="date" id="dg-end"></div>
       <div class="form-group" id="dg-price-group"><label>Итоговая сумма по ДС</label><input type="text" id="dg-price" placeholder="100 000"></div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="dg-ks-checkbox">
+        <label for="dg-ks-checkbox">Оформить КС-2/КС-3?</label>
+      </div>
     </div>
   </div>
 
@@ -329,6 +332,10 @@
       <div class="form-group"><label>Конец работ</label><input type="date" id="cg-end"></div>
       <div class="form-group"><label>Сумма ИТОГО</label><input type="text" id="cg-price" placeholder="100 000"></div>
       <div class="form-group"><label>Аванс %</label><input type="text" id="cg-adv" value="30"></div>
+      <div class="checkbox-row" id="cg-ks-row" style="display:none;">
+        <input type="checkbox" id="cg-ks-checkbox">
+        <label for="cg-ks-checkbox">Оформить КС-2/КС-3?</label>
+      </div>
     </div>
   </div>
 
@@ -454,6 +461,8 @@ function selectMain(type) {
   resetWorkVariantButtons();
   resetDsGenerateCheckbox();
   document.getElementById('form-fields').classList.remove('active');
+  document.getElementById('cg-ks-row').style.display = (type === 'status3') ? 'flex' : 'none';
+  document.getElementById('cg-ks-checkbox').checked = false;
 
   if (type === 'status1') {
     document.getElementById('work-variant-block').style.display = 'block';
@@ -872,6 +881,7 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       payload.contractEnd       = formatDateRu(document.getElementById('cg-end').value);
       payload.contractPrice     = document.getElementById('cg-price').value.trim();
       payload.contractAdv       = document.getElementById('cg-adv').value.trim();
+      payload.ksGenerate        = (currentMain === 'status3') && document.getElementById('cg-ks-checkbox').checked;
     }
 
     if (dsGenerateChecked) {
@@ -889,6 +899,7 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       payload.dsGenStart         = formatDateRu(document.getElementById('dg-start').value);
       payload.dsGenEnd           = formatDateRu(document.getElementById('dg-end').value);
       payload.dsGenPrice         = document.getElementById('dg-price').value.trim();
+      payload.ksGenerate         = document.getElementById('dg-ks-checkbox').checked;
     }
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
@@ -905,6 +916,9 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     document.getElementById('contract-mode-upload').classList.add('active');
     document.getElementById('contract-mode-generate').classList.remove('active');
     contractGenerateMode = false;
+    document.getElementById('cg-ks-checkbox').checked = false;
+    document.getElementById('cg-ks-row').style.display = 'none';
+    document.getElementById('dg-ks-checkbox').checked = false;
     resetDsGenerateCheckbox();
     resetWorkVariantButtons();
     document.querySelectorAll('.btn').forEach(function(b) { b.classList.remove('active'); });
