@@ -484,7 +484,8 @@ function selectWorkVariant(variant) {
   currentSub = variant;
   document.querySelectorAll('#work-variant-buttons .btn').forEach(function(b){ b.classList.remove('active'); });
   document.getElementById(variant === 'иждивение' ? 'btn-work-izh' : 'btn-work-dav').classList.add('active');
-  document.getElementById('m15-group').style.display = variant === 'давальческое' ? 'block' : 'none';
+  var showM15 = variant === 'давальческое' && currentMain !== 'status1';
+  document.getElementById('m15-group').style.display = showM15 ? 'block' : 'none';
 }
 
 // ===== ЗАГРУЗКА ЗАЯВОК ДЛЯ ДОПЛАТЫ =====
