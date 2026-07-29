@@ -367,6 +367,15 @@
 <script>
 // ===== TELEGRAM =====
 let tg = null;
+let scriptLoadStatus = 'не проверялось';
+try {
+  var tgScript = document.querySelector('script[src*="telegram-web-app"]');
+  if (tgScript) {
+    tgScript.addEventListener('load',  function() { scriptLoadStatus = 'загрузился успешно'; });
+    tgScript.addEventListener('error', function() { scriptLoadStatus = 'ОШИБКА ЗАГРУЗКИ (заблокирован/недоступен)'; });
+  }
+} catch(e) {}
+
 try {
   if (window.Telegram && window.Telegram.WebApp) {
     tg = window.Telegram.WebApp;
