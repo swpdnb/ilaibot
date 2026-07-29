@@ -398,15 +398,17 @@ try {
 try {
   window.addEventListener('load', function() {
     setTimeout(function() {
+      var windowTelegramExists = (typeof window.Telegram !== 'undefined');
       alert(
-        'ДИАГНОСТИКА:\n' +
-        'tg существует: ' + (tg ? 'да' : 'нет') + '\n' +
+        'ДИАГНОСТИКА v2:\n' +
+        'window.Telegram существует: ' + (windowTelegramExists ? 'да' : 'нет') + '\n' +
+        'window.Telegram.WebApp существует: ' + (tg ? 'да' : 'нет') + '\n' +
+        'Статус загрузки скрипта: ' + scriptLoadStatus + '\n' +
+        'User-Agent:\n' + navigator.userAgent + '\n\n' +
         'platform: ' + (tg ? tg.platform : '—') + '\n' +
-        'version: ' + (tg ? tg.version : '—') + '\n' +
-        'initData (сырое): ' + (tg ? tg.initData : '—') + '\n' +
-        'initDataUnsafe: ' + (tg ? JSON.stringify(tg.initDataUnsafe) : '—')
+        'version: ' + (tg ? tg.version : '—')
       );
-    }, 500);
+    }, 800);
   });
 } catch(e) {}
 
