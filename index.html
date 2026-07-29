@@ -251,11 +251,11 @@
       </div>
 
       <div class="form-group"><label>№ Доп. соглашения</label><input type="text" id="dg-num"></div>
-      <div class="form-group"><label>Дата ДС (ДД.ММ.ГГГГ)</label><input type="text" id="dg-date" placeholder="1.06.2026"></div>
+      <div class="form-group"><label>Дата ДС</label><input type="date" id="dg-date"></div>
       <div class="form-group"><label>№ Основного договора</label><input type="text" id="dg-main-num"></div>
-      <div class="form-group"><label>Дата Основного договора</label><input type="text" id="dg-main-date" placeholder="1.06.2026"></div>
-      <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="text" id="dg-start" placeholder="1.06.2026"></div>
-      <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="text" id="dg-end" placeholder="1.06.2026"></div>
+      <div class="form-group"><label>Дата Основного договора</label><input type="date" id="dg-main-date"></div>
+      <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="date" id="dg-start"></div>
+      <div class="form-group" id="dg-end-group"><label>Срок окончания ремонта</label><input type="date" id="dg-end"></div>
       <div class="form-group" id="dg-price-group"><label>Итоговая сумма по ДС</label><input type="text" id="dg-price" placeholder="100 000"></div>
     </div>
   </div>
@@ -320,10 +320,10 @@
         <select id="cg-signer"><option value="">⏳ Загрузка...</option></select>
       </div>
       <div class="form-group"><label>№ договора</label><input type="text" id="cg-num"></div>
-      <div class="form-group"><label>Дата (ДД.ММ.ГГГГ)</label><input type="text" id="cg-date" placeholder="1.06.2026"></div>
+      <div class="form-group"><label>Дата договора</label><input type="date" id="cg-date"></div>
       <div class="form-group"><label>Адрес объекта</label><input type="text" id="cg-addr"></div>
-      <div class="form-group"><label>Начало (ДД.ММ.ГГГГ)</label><input type="text" id="cg-start" placeholder="1.06.2026"></div>
-      <div class="form-group"><label>Конец (ДД.ММ.ГГГГ)</label><input type="text" id="cg-end" placeholder="1.06.2026"></div>
+      <div class="form-group"><label>Начало работ</label><input type="date" id="cg-start"></div>
+      <div class="form-group"><label>Конец работ</label><input type="date" id="cg-end"></div>
       <div class="form-group"><label>Сумма ИТОГО</label><input type="text" id="cg-price" placeholder="100 000"></div>
       <div class="form-group"><label>Аванс %</label><input type="text" id="cg-adv" value="30"></div>
     </div>
@@ -592,7 +592,7 @@ document.getElementById('ds-need-checkbox').addEventListener('change', async fun
         document.getElementById('dg-signer').value = currentLinkedContractMeta.signerKey;
       }
       if (currentLinkedContractMeta.docNum)  document.getElementById('dg-main-num').value  = currentLinkedContractMeta.docNum;
-      if (currentLinkedContractMeta.docDate) document.getElementById('dg-main-date').value = currentLinkedContractMeta.docDate;
+      if (currentLinkedContractMeta.docDate) document.getElementById('dg-main-date').value = ruDateToIso(currentLinkedContractMeta.docDate);
 
       if (currentLinkedContractMeta.nds === 'Без НДС') {
         document.getElementById('dg-btn-nonds').click();
@@ -675,16 +675,23 @@ document.getElementById('cg-btn-nonds').addEventListener('click', function() {
   document.getElementById('cg-nds-rate-group').style.display = 'none';
 });
 
-// ===== ПАРСИНГ ДАТЫ ДД.ММ.ГГГГ ДЛЯ СРАВНЕНИЯ =====
-function parseRuDate(str) {
-  if (!str) return null;
-  var parts = str.trim().split('.');
-  if (parts.length !== 3) return null;
-  var d = parseInt(parts[0], 10), m = parseInt(parts[1], 10), y = parseInt(parts[2], 10);
-  if (isNaN(d) || isNaN(m) || isNaN(y)) return null;
-  var dt = new Date(y, m - 1, d);
-  if (isNaN(dt.getTime())) return null;
-  return dt;
+// ===== КОНВЕРТАЦИЯ ДАТ: ISO (из <input type="date">) ↔ РУССКИЙ ФОРМАТ (для документов) =====
+function formatDateRu(isoDate) {
+  if (!isoDate) return '';
+  var parts = isoDate.split('-'); // yyyy-mm-dd
+  if (parts.length !== 3) return isoDate;
+  var d = parseInt(parts[2], 10);
+  return d + '.' + parts[1] + '.' + parts[0];
+}
+
+function ruDateToIso(ruStr) {
+  if (!ruStr) return '';
+  var parts = ruStr.trim().split('.');
+  if (parts.length !== 3) return '';
+  var d = parts[0].padStart(2, '0');
+  var m = parts[1].padStart(2, '0');
+  var y = parts[2];
+  return y + '-' + m + '-' + d;
 }
 
 // ===== ДЕНЕЖНЫЙ ФОРМАТ ПОЛЕЙ СУММЫ =====
@@ -802,9 +809,9 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     if (!document.getElementById('cg-signer').value)      { showAlert('Выберите подписанта для договора!'); return; }
     if (!document.getElementById('cg-num').value.trim())  { showAlert('Укажите номер договора!'); return; }
 
-    var cgDocDate   = parseRuDate(document.getElementById('cg-date').value.trim());
-    var cgStartDate = parseRuDate(document.getElementById('cg-start').value.trim());
-    if (cgDocDate && cgStartDate && cgDocDate > cgStartDate) {
+    var cgDocDateVal   = document.getElementById('cg-date').value;
+    var cgStartDateVal = document.getElementById('cg-start').value;
+    if (cgDocDateVal && cgStartDateVal && cgDocDateVal > cgStartDateVal) {
       showAlert('Дата договора не может быть позже даты начала работ!');
       return;
     }
@@ -816,9 +823,9 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
     if (!document.getElementById('dg-signer').value)      { showAlert('Выберите подписанта для ДС!'); return; }
     if (!document.getElementById('dg-num').value.trim())  { showAlert('Укажите номер ДС!'); return; }
 
-    var dgDsDate    = parseRuDate(document.getElementById('dg-date').value.trim());
-    var dgStartDate = parseRuDate(document.getElementById('dg-start').value.trim());
-    if (dgDsDate && dgStartDate && dgDsDate > dgStartDate) {
+    var dgDsDateVal    = document.getElementById('dg-date').value;
+    var dgStartDateVal = document.getElementById('dg-start').value;
+    if (dgDsDateVal && dgStartDateVal && dgDsDateVal > dgStartDateVal) {
       showAlert('Дата ДС не может быть позже даты начала ремонта!');
       return;
     }
@@ -855,10 +862,10 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       payload.signerKey         = document.getElementById('cg-signer').value;
       payload.contractWorkKind  = document.getElementById('cg-work-kind').value;
       payload.contractDocNum    = document.getElementById('cg-num').value.trim();
-      payload.contractDocDate   = document.getElementById('cg-date').value.trim();
+      payload.contractDocDate   = formatDateRu(document.getElementById('cg-date').value);
       payload.contractAddr      = document.getElementById('cg-addr').value.trim();
-      payload.contractStart     = document.getElementById('cg-start').value.trim();
-      payload.contractEnd       = document.getElementById('cg-end').value.trim();
+      payload.contractStart     = formatDateRu(document.getElementById('cg-start').value);
+      payload.contractEnd       = formatDateRu(document.getElementById('cg-end').value);
       payload.contractPrice     = document.getElementById('cg-price').value.trim();
       payload.contractAdv       = document.getElementById('cg-adv').value.trim();
     }
@@ -872,11 +879,11 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       payload.dsGenContractorKey = document.getElementById('dg-contractor').value;
       payload.dsGenSignerKey     = document.getElementById('dg-signer').value;
       payload.dsGenNum           = document.getElementById('dg-num').value.trim();
-      payload.dsGenDate          = document.getElementById('dg-date').value.trim();
+      payload.dsGenDate          = formatDateRu(document.getElementById('dg-date').value);
       payload.dsGenMainNum       = document.getElementById('dg-main-num').value.trim();
-      payload.dsGenMainDate      = document.getElementById('dg-main-date').value.trim();
-      payload.dsGenStart         = document.getElementById('dg-start').value.trim();
-      payload.dsGenEnd           = document.getElementById('dg-end').value.trim();
+      payload.dsGenMainDate      = formatDateRu(document.getElementById('dg-main-date').value);
+      payload.dsGenStart         = formatDateRu(document.getElementById('dg-start').value);
+      payload.dsGenEnd           = formatDateRu(document.getElementById('dg-end').value);
       payload.dsGenPrice         = document.getElementById('dg-price').value.trim();
     }
 
