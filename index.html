@@ -597,8 +597,13 @@ async function loadDoplataOrders() {
     var result  = await resp.json();
     cachedOrders = result.orders || [];
 
+    // Показываем и предоплаты, и уже доплаченные заявки — к одному договору
+    // может быть несколько ДС подряд, после первого статус меняется на "доплата"
     var predoplaty = cachedOrders.filter(function(o) {
-      return (o.paymentType === 'предоплата' || o.paymentType === 'status1');
+      return (
+        o.paymentType === 'предоплата' || o.paymentType === 'status1' ||
+        o.paymentType === 'доплата'    || o.paymentType === 'status2'
+      );
     });
 
     select.innerHTML = '<option value="__none__">— Не связанная заявка —</option>';
