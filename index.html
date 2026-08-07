@@ -304,7 +304,11 @@
         <select id="dg-signer"><option value="">⏳ Загрузка...</option></select>
       </div>
 
-      <div class="form-group"><label>№ Доп. соглашения</label><input type="text" id="dg-num"></div>
+      <div class="form-group">
+        <label>№ Доп. соглашения</label>
+        <div id="dg-prev-num-hint" class="meta-hint" style="display:none;"></div>
+        <input type="text" id="dg-num">
+      </div>
       <div class="form-group"><label>Дата ДС</label><input type="date" id="dg-date"></div>
       <div class="form-group"><label>№ Основного договора</label><input type="text" id="dg-main-num"></div>
       <div class="form-group"><label>Дата Основного договора</label><input type="date" id="dg-main-date"></div>
@@ -412,7 +416,7 @@
 
 <!-- ЭКРАН 4: ИСПРАВЛЕННЫЕ -->
 <div id="screen-fix" class="screen">
-  <div class="page-header">📎 Исправленные документы</div>
+  <div class="page-header" id="fix-page-header">📎 Исправленные документы</div>
   <button class="back-btn" id="back-from-fix">← Назад к заявкам</button>
   <div class="fix-banner">Заявка № <strong id="fix-order-id-text"></strong></div>
   <form id="fixForm">
@@ -421,7 +425,7 @@
         <label>📎 Файлы (можно выбрать сразу несколько)</label>
         <input type="file" id="fi-files" multiple>
       </div>
-      <button type="submit" class="submit-btn">📤 Загрузить исправленные</button>
+      <button type="submit" class="submit-btn" id="fix-submit-btn">📤 Загрузить исправленные</button>
     </div>
   </form>
 </div>
@@ -626,6 +630,7 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
     currentSub = '';
     resetWorkVariantButtons();
     document.getElementById('m15-group').style.display = 'none';
+    document.getElementById('dg-prev-num-hint').style.display = 'none';
     return;
   }
 
@@ -648,6 +653,14 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   infoBlock.style.display = 'block';
   document.getElementById('contractor').value = order.contractor || '';
   document.getElementById('branch').value     = order.branch     || '';
+
+  var prevHint = document.getElementById('dg-prev-num-hint');
+  if (order.lastDsNum) {
+    prevHint.textContent = 'Предыдущий номер ДС: ' + order.lastDsNum;
+    prevHint.style.display = 'block';
+  } else {
+    prevHint.style.display = 'none';
+  }
 
   currentLinkedContractMeta = order.contractMeta || null;
 
@@ -925,6 +938,14 @@ document.getElementById('megaForm').addEventListener('submit', async function(e)
       showAlert('Дата ДС не может быть позже даты начала ремонта!');
       return;
     }
+
+    if (dgDsDateVal && currentLinkedContractMeta && currentLinkedContractMeta.endDate) {
+      var mainEndIso = ruDateToIso(currentLinkedContractMeta.endDate);
+      if (mainEndIso && dgDsDateVal > mainEndIso) {
+        showAlert('Дата ДС не может быть позже даты окончания ремонта по основному договору!');
+        return;
+      }
+    }
   }
 
   var btn = document.getElementById('submit-new');
@@ -1126,6 +1147,7 @@ function renderOrders(orders) {
           ' data-m15="'     + (order.m15 || '')         + '">' +
           (order.fixFolderUrl ? '🔄 Загрузить снова' : '⚠️ Исправленные') +
         '</button>' +
+        '<button class="link-btn gray add-docs-btn" data-id="' + order.id + '">📎 Доп. документы</button>' +
         '<button class="link-btn gray gm-toggle-btn" data-id="' + order.id + '">' +
           '📝 ГМ' + (order.gm ? ' ✓' : '') +
         '</button>' +
@@ -1145,6 +1167,12 @@ function renderOrders(orders) {
   list.querySelectorAll('.fix-btn').forEach(function(b) {
     b.addEventListener('click', function() {
       openFixScreen(this.getAttribute('data-id'));
+    });
+  });
+
+  list.querySelectorAll('.add-docs-btn').forEach(function(b) {
+    b.addEventListener('click', function() {
+      openAddDocsScreen(this.getAttribute('data-id'));
     });
   });
 
@@ -1197,17 +1225,32 @@ document.getElementById('searchInput').addEventListener('input', function() {
 });
 
 // ===== ЭКРАН ИСПРАВЛЕННЫХ =====
+var currentFixMode = 'fix'; // 'fix' или 'additional'
+
 function openFixScreen(orderId) {
   currentFixOrderId = orderId;
+  currentFixMode = 'fix';
   document.getElementById('fix-order-id-text').textContent = orderId;
+  document.getElementById('fix-page-header').textContent = '📎 Исправленные документы';
+  document.getElementById('fix-submit-btn').textContent = '📤 Загрузить исправленные';
   showScreen('screen-fix');
 }
 
-// ===== ОТПРАВКА ИСПРАВЛЕННЫХ =====
+function openAddDocsScreen(orderId) {
+  currentFixOrderId = orderId;
+  currentFixMode = 'additional';
+  document.getElementById('fix-order-id-text').textContent = orderId;
+  document.getElementById('fix-page-header').textContent = '📎 Дополнительные документы';
+  document.getElementById('fix-submit-btn').textContent = '📤 Загрузить дополнительные';
+  showScreen('screen-fix');
+}
+
+// ===== ОТПРАВКА ИСПРАВЛЕННЫХ / ДОПОЛНИТЕЛЬНЫХ =====
 document.getElementById('fixForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
-  var btn = this.querySelector('.submit-btn');
+  var isAdditional = currentFixMode === 'additional';
+  var btn = document.getElementById('fix-submit-btn');
   btn.disabled    = true;
   btn.textContent = '⏳ Загрузка...';
 
@@ -1215,7 +1258,7 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
     var massFiles = await readMassFiles('fi-files');
 
     var payload = {
-      mode: 'fix',
+      mode: isAdditional ? 'addDocs' : 'fix',
       tg_id: tgId,
       tg_username: tgUsername,
       orderId: currentFixOrderId,
@@ -1224,7 +1267,9 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
 
     await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
 
-    showAlert('✅ Исправленные документы загружены!\n\nПроверьте Telegram.');
+    showAlert(isAdditional
+      ? '✅ Дополнительные документы загружены!\n\nПроверьте Telegram.'
+      : '✅ Исправленные документы загружены!\n\nПроверьте Telegram.');
     this.reset();
     showScreen('screen-orders');
     loadOrders();
@@ -1233,7 +1278,7 @@ document.getElementById('fixForm').addEventListener('submit', async function(e) 
     showAlert('❌ Ошибка: ' + err.message);
   } finally {
     btn.disabled    = false;
-    btn.textContent = '📤 Загрузить исправленные';
+    btn.textContent = isAdditional ? '📤 Загрузить дополнительные' : '📤 Загрузить исправленные';
   }
 });
 
