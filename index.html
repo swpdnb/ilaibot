@@ -309,7 +309,11 @@
         <div id="dg-prev-num-hint" class="meta-hint" style="display:none;"></div>
         <input type="text" id="dg-num">
       </div>
-      <div class="form-group"><label>Дата ДС</label><input type="date" id="dg-date"></div>
+      <div class="form-group">
+        <label>Дата ДС</label>
+        <div id="dg-end-date-hint" class="meta-hint" style="display:none;"></div>
+        <input type="date" id="dg-date">
+      </div>
       <div class="form-group"><label>№ Основного договора</label><input type="text" id="dg-main-num"></div>
       <div class="form-group"><label>Дата Основного договора</label><input type="date" id="dg-main-date"></div>
       <div class="form-group" id="dg-start-group"><label>Срок начала ремонта</label><input type="date" id="dg-start"></div>
@@ -636,6 +640,7 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
     resetWorkVariantButtons();
     document.getElementById('m15-group').style.display = 'none';
     document.getElementById('dg-prev-num-hint').style.display = 'none';
+    document.getElementById('dg-end-date-hint').style.display = 'none';
     return;
   }
 
@@ -668,6 +673,14 @@ document.getElementById('doplata-order-select').addEventListener('change', funct
   }
 
   currentLinkedContractMeta = order.contractMeta || null;
+
+  var endDateHint = document.getElementById('dg-end-date-hint');
+  if (currentLinkedContractMeta && currentLinkedContractMeta.endDate) {
+    endDateHint.textContent = 'Дата окончания ремонта по договору: ' + currentLinkedContractMeta.endDate;
+    endDateHint.style.display = 'block';
+  } else {
+    endDateHint.style.display = 'none';
+  }
 
   if (currentLinkedContractMeta && currentLinkedContractMeta.workType) {
     var mapped = currentLinkedContractMeta.workType === 'Давальческие' ? 'давальческое' : 'иждивение';
